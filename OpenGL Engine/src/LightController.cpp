@@ -27,11 +27,12 @@ std::vector<LightSource*> LightController::getLightSources()
 	return std::vector<LightSource*>();
 }
 
-LightSource LightController::getLightSource(int index)
+LightSource* LightController::getLightSource(int index)
 {
-	if(containsLightSource(index))
-		return *this->m_lightSources[index];
-	
+	if (containsLightSource(index))
+		return this->m_lightSources[index];
+	else
+		return nullptr;
 }
 
 int LightController::addLightSource(glm::vec3 position, glm::vec4 color, bool hidden)
@@ -40,7 +41,9 @@ int LightController::addLightSource(glm::vec3 position, glm::vec4 color, bool hi
 	l->position = position;
 	l->color = color;
 	l->hidden = hidden;
-	l->directional = false;
+	l->type = Point;
+	l->radius = 10;
+	l->falloff = 0.0;
 
 	this->m_highestIndex++;
 	this->m_lightSources.insert(std::make_pair(this->m_highestIndex,l));
@@ -56,7 +59,9 @@ int LightController::addDirectionalLightSource(glm::vec3 direction, glm::vec4 co
 	l->direction = direction;
 	l->color = color;
 	l->hidden = hidden;
-	l->directional = true;
+	l->type = Directional;
+	l->radius = 0; //since not needed in directional case
+	l->falloff = 0; //since not needed in directional case
 
 	this->m_highestIndex++;
 	this->m_lightSources.insert(std::make_pair(this->m_highestIndex, l));
@@ -77,7 +82,7 @@ void LightController::removeLightSource(int index)
 void LightController::setPosition(glm::vec3 position, int index)
 {
 	if (containsLightSource(index)) {
-		if (this->m_lightSources[index]->directional) {
+		if (this->m_lightSources[index]->type == Directional) {
 			this->m_lightSources[index]->direction = position;
 		}
 		else {

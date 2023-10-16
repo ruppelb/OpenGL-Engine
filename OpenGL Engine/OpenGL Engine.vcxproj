@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
-    <ClCompile Include="src\game_objects\GameObject.cpp" />
+    <ClCompile Include="src\scene_objects\SceneObject.cpp" />
+    <ClCompile Include="src\scene_objects\LightObject.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\LightController.cpp" />
     <ClCompile Include="src\Material.cpp" />
@@ -44,8 +46,10 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\CameraController.h" />
-    <ClInclude Include="src\game_objects\GameObject.h" />
+    <ClInclude Include="src\scene_objects\SceneObject.h" />
+    <ClInclude Include="src\scene_objects\LightObject.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\LightController.h" />
     <ClInclude Include="src\Material.h" />

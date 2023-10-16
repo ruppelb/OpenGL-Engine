@@ -7,12 +7,16 @@
 #include <vector>
 #include <map>
 
+enum LightType { Directional, Point };
+
 struct LightSource {
 	glm::vec3 position;
 	glm::vec3 direction;
-	bool directional;
+	LightType type;
 	bool hidden;
 	glm::vec4 color;
+	float radius;
+	float falloff;
 };
 
 class LightController {
@@ -25,7 +29,7 @@ public:
 
 	std::vector<LightSource*> getLightSources();
 
-	LightSource getLightSource(int index);
+	LightSource* getLightSource(int index);
 
 	int addLightSource(glm::vec3 position, glm::vec4 color, bool hidden = false);
 

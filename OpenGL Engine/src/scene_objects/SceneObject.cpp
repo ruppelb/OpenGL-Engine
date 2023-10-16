@@ -1,8 +1,7 @@
-#include "GameObject.h"
-#include <iostream>
-#include <imgui/imgui.h>
+#include "SceneObject.h"
 
-GameObject::GameObject(std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr <Shader>s, std::shared_ptr<Renderer> renderer, std::vector<Material> overrideMaterials)
+
+SceneObject::SceneObject(std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr <Shader>s, std::shared_ptr<Renderer> renderer, std::vector<Material> overrideMaterials)
 	: m_renderer(renderer),m_scale(glm::vec3(1.0)),m_translation(glm::vec3(0.0)), m_name(name)
 {
 	m_cameraController = CameraController::getInstance();
@@ -21,7 +20,7 @@ GameObject::GameObject(std::string name, std::vector<std::shared_ptr<Mesh>> mesh
 
 }
 
-GameObject::GameObject(std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, Material* overrideMaterial)
+SceneObject::SceneObject(std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, Material* overrideMaterial)
 	: m_renderer(renderer), m_scale(glm::vec3(1.0)), m_translation(glm::vec3(0.0)), m_name(name)
 {
 	m_cameraController = CameraController::getInstance();
@@ -40,12 +39,12 @@ GameObject::GameObject(std::string name, std::shared_ptr<Mesh> mesh, std::shared
 	}
 }
 
-GameObject::~GameObject()
+SceneObject::~SceneObject()
 {
 	
 }
 //m_markerID(other.m_markerID),m_color(other.m_color),
-GameObject::GameObject(const GameObject& other)
+SceneObject::SceneObject(const SceneObject& other)
 	:m_meshes(other.m_meshes), m_shader(other.m_shader), m_overrideMaterials(other.m_overrideMaterials),m_overrideMeshMaterials(other.m_overrideMeshMaterials),m_scale(other.m_scale),
 	m_translation(glm::vec3(0.0)),m_cameraController(other.m_cameraController),m_lightController(other.m_lightController), m_renderer(other.m_renderer), m_model(other.m_model),
 	m_hidden(other.m_hidden),m_angleX(other.m_angleX), m_angleY(other.m_angleY), m_angleZ(other.m_angleZ)
@@ -54,11 +53,11 @@ GameObject::GameObject(const GameObject& other)
 	m_name.append("_copy");
 }
 
-void GameObject::onUpdate(float deltaTime)
+void SceneObject::onUpdate(float deltaTime)
 {
 }
 
-void GameObject::onRender()
+void SceneObject::onRender()
 {
 	if (!m_hidden) {
 		glm::mat4 appliedTransform = glm::scale(glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.0), m_translation), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)), m_scale) * m_model;
@@ -82,13 +81,15 @@ void GameObject::onRender()
 			std::string number = std::to_string(i);
 			//std::cout << glm::to_string(light->position) << std::endl;
 			if (!light->hidden) {
-				if (light->directional) {
+				if (light->type == Directional) {
 					m_shader->setUniform4f("lights[" + number + "].vector", light->direction.x, light->direction.y, light->direction.z, 0.0);
 				}
 				else {
 					m_shader->setUniform4f("lights[" + number + "].vector", light->position.x, light->position.y, light->position.z, 1.0);
 				}
 				m_shader->setUniform3f("lights[" + number +"].color", light->color);
+				m_shader->setUniform1f("lights[" + number + "].radius", light->radius);
+				m_shader->setUniform1f("lights[" + number + "].falloff", light->falloff);
 			}
 			m_shader->setUniform3f("lights[" + number + "].ambient", ambientLight);
 		}
@@ -105,24 +106,18 @@ void GameObject::onRender()
 	}
 }
 
-void GameObject::onImGuiRender()
+void SceneObject::onImGuiRender()
 { 
-	std::string transl = "Translation ";
-	transl.append(m_name);
-	ImGui::SliderFloat3(transl.c_str(), &m_translation.x, -100.0f, 100.0f);
-	std::string rotX = "Rotation X ";
-	rotX.append(m_name);
-	ImGui::SliderFloat(rotX.c_str(), &m_angleX, 0.f, 6.2831f);
-	std::string rotY = "Rotation Y ";
-	rotY.append(m_name);
-	ImGui::SliderFloat(rotY.c_str(), &m_angleY, 0.f, 6.2831f);
-	std::string rotZ = "Rotation Z ";
-	rotZ.append(m_name);
-	ImGui::SliderFloat(rotZ.c_str(), &m_angleZ, 0.f, 6.2831f);
-
+	ImGui::BeginChild(m_name.c_str(),ImVec2(450,110),true);
+	ImGui::Text(m_name.c_str());
+	ImGui::SliderFloat3("Translation ", &m_translation.x, -30.0f, 30.0f);
+	ImGui::SliderFloat("Rotation X ", &m_angleX, 0.f, 6.2831f);
+	ImGui::SliderFloat("Rotation Y ", &m_angleY, 0.f, 6.2831f);
+	ImGui::SliderFloat("Rotation Z ", &m_angleZ, 0.f, 6.2831f);
+	ImGui::EndChild();
 }
 
-void GameObject::setModelMatrix(glm::mat4 model)
+void SceneObject::setModelMatrix(glm::mat4 model)
 {
 	m_model = model;
 	m_translation = glm::vec3(0);
@@ -131,42 +126,52 @@ void GameObject::setModelMatrix(glm::mat4 model)
 	m_angleZ = 0.0;
 }
 
-glm::mat4 GameObject::getModelMatrix()
+glm::mat4 SceneObject::getModelMatrix()
 {
-	return m_model;
+	return glm::scale(glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.0), m_translation), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)), m_scale) * m_model;
 }
 
-void GameObject::setHidden(bool state)
+glm::mat4 SceneObject::getModelMatrixForNormals()
+{
+	return glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)) * m_model;
+}
+
+void SceneObject::setHidden(bool state)
 {
 	m_hidden = state;
 }
 
-void GameObject::setScale(glm::vec3 scale)
+void SceneObject::setScale(glm::vec3 scale)
 {
 	m_scale = scale;
 }
 
-void GameObject::setTranslation(glm::vec3 translation)
+void SceneObject::setTranslation(glm::vec3 translation)
 {
 	m_translation = translation;
 }
 
-void GameObject::setRotationX(float angle)
+glm::vec3 SceneObject::getTranslation()
+{
+	return m_translation;
+}
+
+void SceneObject::setRotationX(float angle)
 {
 	m_angleX = angle;
 }
 
-void GameObject::setRotationY(float angle)
+void SceneObject::setRotationY(float angle)
 {
 	m_angleY = angle;
 }
 
-void GameObject::setRotationZ(float angle)
+void SceneObject::setRotationZ(float angle)
 {
 	m_angleZ = angle;
 }
 
-bool GameObject::isHidden()
+bool SceneObject::isHidden()
 {
 	return m_hidden;
 }

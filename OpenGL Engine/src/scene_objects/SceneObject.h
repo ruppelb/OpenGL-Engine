@@ -8,19 +8,21 @@
 #include "../Mesh.h"
 #include <string>
 #include <memory>
+#include <iostream>
+#include <imgui/imgui.h>
 
-class GameObject {
+class SceneObject {
 public:
-	GameObject(std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr <Shader>s, std::shared_ptr<Renderer> renderer, std::vector<Material> overrideMaterials = std::vector<Material>());
-	GameObject(std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr <Shader>s, std::shared_ptr<Renderer> renderer, Material* overrideMaterial = nullptr);
+	SceneObject(std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr <Shader>s, std::shared_ptr<Renderer> renderer, std::vector<Material> overrideMaterials = std::vector<Material>());
+	SceneObject(std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr <Shader>s, std::shared_ptr<Renderer> renderer, Material* overrideMaterial = nullptr);
 	
-	~GameObject();
+	~SceneObject();
 
 
-	GameObject(const GameObject& other);
+	SceneObject(const SceneObject& other);
 
 
-	void onUpdate(float deltaTime);
+	virtual void onUpdate(float deltaTime);
 
 	virtual void onRender();
 
@@ -28,12 +30,14 @@ public:
 
 	void setModelMatrix(glm::mat4 model);
 	glm::mat4 getModelMatrix();
+	glm::mat4 getModelMatrixForNormals();
 
 	void setHidden(bool state);
 
 	void setScale(glm::vec3 scale);
 
 	void setTranslation(glm::vec3 translation);
+	glm::vec3 getTranslation();
 
 	void setRotationX(float angle);
 	void setRotationY(float angle);

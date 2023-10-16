@@ -13,7 +13,8 @@
 #include "Texture.h"
 #include "ObjectLoader.h"
 #include "CameraController.h"
-#include "game_objects/GameObject.h"
+#include "scene_objects/SceneObject.h"
+#include "scene_objects/LightObject.h"
 #include "LightController.h"
 #include "Material.h"
 #include "ogl_UI.h"
@@ -36,13 +37,13 @@ using namespace std;
 
 //create GameObjects. Initially one for each kind of marker
 std::vector<std::shared_ptr<Texture> > ui_textures;
-std::vector<std::shared_ptr<GameObject> > gameObjects;
+std::vector<std::shared_ptr<SceneObject> > gameObjects;
 
-std::shared_ptr<GameObject> cameraZero;
-std::shared_ptr<GameObject> cameraOne;
+std::shared_ptr<SceneObject> cameraZero;
+std::shared_ptr<SceneObject> cameraOne;
 
-std::shared_ptr<GameObject> lightZero;
-std::shared_ptr<GameObject> lightOne;
+std::shared_ptr<SOLight> lightZero;
+std::shared_ptr<SOLight> lightOne;
 
 //TODO: Add gameobjects for the two initial cameras and light source. Also add one initial primitive shape
 
@@ -154,24 +155,24 @@ std::shared_ptr<Renderer> loadAssets()
 	//create initial objects
 
 	//cameras
-	cameraZero = std::make_shared<GameObject>("CameraZero",cameraMesh, shader, renderer);
+	cameraZero = std::make_shared<SceneObject>("CameraZero",cameraMesh, shader, renderer);
 	cameraZero->setHidden(false);
 	gameObjects.push_back(cameraZero);
 
-	cameraOne = std::make_shared<GameObject>("CameraOne", cameraMesh, shader, renderer);
+	cameraOne = std::make_shared<SceneObject>("CameraOne", cameraMesh, shader, renderer);
 	cameraOne->setHidden(false);
 	gameObjects.push_back(cameraOne);
 	
 	//light
-	lightZero = std::make_shared<GameObject>("LightZero",directionalLightMesh, shader, renderer);
+	lightZero = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(1),"LightZero",directionalLightMesh, shader, renderer);
 	lightZero->setHidden(false);
 	gameObjects.push_back(lightZero);
 
-	lightOne = std::make_shared<GameObject>("LightOne",pointLightMesh, shader, renderer);
+	lightOne = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(2), "LightOne", pointLightMesh, shader, renderer);
 	lightOne->setHidden(false);
 	gameObjects.push_back(lightOne);
 	
-	std::shared_ptr<GameObject> test = std::make_shared<GameObject>("TestMesh", desertMesh, shader, renderer);
+	std::shared_ptr<SceneObject> test = std::make_shared<SceneObject>("TestMesh", desertMesh, shader, renderer);
 	//test->setModelMatrix(glm::rotate(glm::translate(glm::mat4(1.0), ), glm::radians(45.0f), glm::vec3(0.0f,	1.0f, 0.0f)));
 	test->setTranslation(glm::vec3(0, 0, -10));
 	test->setRotationY(glm::radians(45.0f));
@@ -191,14 +192,17 @@ void renderUI()
 	ImGui::NewFrame();
 
 	//TODO: render UI
+	ImGui::Begin("Objects");
 
-
-
-	for (std::shared_ptr<GameObject> object : gameObjects) {
+	for (std::shared_ptr<SceneObject> object : gameObjects) {
 		//if (object == lightOne) {
 			object->onImGuiRender();
 		//}
 	}
+
+	ImGui::End();
+
+	
 
 	//finally render ImGUI windwos
 	ImGui::Render();
@@ -282,36 +286,14 @@ int main(int argc, char *argv[])
 		return -1;
 
 	{
+		//setup Lighting
+		LightController* lightController = LightController::getInstance();
+		int light0 = lightController->addDirectionalLightSource(glm::vec3(1.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
+
+		int light1 = lightController->addLightSource(glm::vec3(10, 0.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
 
 		//create renderer and load assets
 		std::shared_ptr<Renderer> renderer = loadAssets();
-
-		//setup Lighting
-		LightController *lightController = LightController::getInstance();
-		glm::vec3 newDir = glm::normalize(glm::vec3(1.0, -1.0, -1.0));
-		int light0 = lightController->addDirectionalLightSource(newDir, glm::vec4(1.0, 1.0, 1.0, 1.0));
-
-		
-		//create rotation matrix from new direction and old direction
-		glm::vec3 cross = glm::normalize(glm::cross(newDir, glm::vec3(0.0, 0.0, -1.0)));
-		float dot = glm::dot(newDir, glm::vec3(0.0, 0.0, -1.0));
-		glm::mat3 skew(0, cross.z, -cross.y, -cross.z, 0, cross.x, cross.y, -cross.x, 0);
-		glm::mat3 newRot = glm::mat3(1.0);
-		newRot = newRot + skew + (glm::matrixCompMult(skew, skew) * (1 / (1 + dot)));
-		cout << glm::to_string(newRot) << endl;
-		glm::mat4 currentPose = lightZero->getModelMatrix();
-		glm::mat4 newPose = glm::mat4(1.0);
-		newPose[0] = glm::vec4(newRot[0], currentPose[0][3]);
-		newPose[1] = glm::vec4(newRot[1], currentPose[1][3]);
-		newPose[2] = glm::vec4(newRot[2], currentPose[2][3]);
-		newPose[3] = currentPose[3];
-		lightZero->setModelMatrix(glm::inverse(newPose));
-		
-
-		glm::vec3 newPos = glm::vec3(10, 0.0, 0.0);
-		int light1 = lightController->addLightSource(newPos,glm::vec4(1.0, 1.0, 1.0, 1.0));
-		lightOne->setTranslation(newPos);
-
 
 		//create CameraController
 		CameraController *cameraController = CameraController::getInstance();
@@ -329,7 +311,7 @@ int main(int argc, char *argv[])
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 		//setup font
-		io.Fonts->AddFontFromFileTTF("res\\fonts\\PressStart2P-Regular.ttf", 30.0f);
+		io.Fonts->AddFontFromFileTTF("res\\fonts\\PressStart2P-Regular.ttf", 10.0f);
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
@@ -343,7 +325,6 @@ int main(int argc, char *argv[])
 			//update camera positions
 			cameraZero->setModelMatrix(glm::inverse(cameraController->getView(cam0)));
 			cameraOne->setModelMatrix(glm::inverse(cameraController->getView(cam1)));
-
 
 			// Render here
 			renderer->clear();

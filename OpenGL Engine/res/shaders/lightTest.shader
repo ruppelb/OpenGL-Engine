@@ -26,6 +26,10 @@ layout(location = 0) out vec4 color;
 
 struct Light {
 	vec4 vector; //(either position or direction depending on w coordinate 1.0 or 0.0
+	//float linear;
+	//float quadratic;
+	float falloff;
+	float radius;
 	vec3 color;
 	vec3 ambient;
 };
@@ -60,7 +64,16 @@ void main()
 			light_dir = normalize( vec3(lights[i].vector) - fragment_position);
 
 			float dist = distance(fragment_position, vec3(lights[i].vector));
-			attenuation = 1.0/ ( 1.0 + (dist * 0.7) + (pow(dist, 2) * 1.8));
+			//attenuation = (1.0/(1.0 + dist * lights[i].linear + pow(dist, 2) * lights[i].quadratic)); //attenuation according to OpenGL lighting model
+
+			//attenuation function according to https://lisyarus.github.io/blog/graphics/2022/07/30/point-light-attenuation.html
+			float s = dist / lights[i].radius;
+			if (s >= 1.0) {
+				attenuation = 0.0;
+			}
+			else {
+				attenuation = pow((1 - pow(s, 2)), 2) / (1.0 + lights[i].falloff * s);
+			}
 		}
 		vec3 diff = max(dot(norm, light_dir), 0.0f) * attenuation * vec3(0.0,0.0,1.0);
 		
