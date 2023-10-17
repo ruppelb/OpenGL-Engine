@@ -56,7 +56,7 @@ int LightController::addLightSource(glm::vec3 position, glm::vec4 color, bool hi
 int LightController::addDirectionalLightSource(glm::vec3 direction, glm::vec4 color, bool hidden)
 {
 	LightSource* l = new LightSource;
-	l->direction = direction;
+	l->direction = glm::normalize(direction);
 	l->color = color;
 	l->hidden = hidden;
 	l->type = Directional;

@@ -8,6 +8,8 @@
 #include <map>
 #include <iostream>
 
+enum CameraType { Ortho, Perspective };
+
 struct Camera {
 	glm::mat4 view;
 	glm::mat4 proj;

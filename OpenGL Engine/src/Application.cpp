@@ -9,15 +9,7 @@
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "ObjectLoader.h"
-#include "CameraController.h"
-#include "scene_objects/SceneObject.h"
-#include "scene_objects/LightObject.h"
-#include "scene_objects/CameraObject.h"
-#include "LightController.h"
-#include "Material.h"
+#include "SceneManager.h"
 #include "ogl_UI.h"
 
 #include "glm/glm.hpp"
@@ -37,16 +29,8 @@ int height;
 using namespace std;
 
 //create GameObjects. Initially one for each kind of marker
-std::vector<std::shared_ptr<Texture> > ui_textures;
-std::vector<std::shared_ptr<SceneObject> > gameObjects;
-
-int light0;
-int light1;
-
-int cam0;
-int cam1;
-
-//TODO: Add gameobjects for the two initial cameras and light source. Also add one initial primitive shape
+std::vector<std::shared_ptr<Texture>> ui_textures;
+SceneManager* sceneManager;
 
 //---------------------------------------------------------------------------
 void reshape(GLFWwindow *window, int in_width, int in_height)
@@ -104,87 +88,6 @@ void initGL(int argc, char *argv[])
 	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }
 
-glm::mat4 createProj(int in_width, int in_height)
-{
-	float near = 0.1f;
-	float far = 500.0f;
-	int max_d = cv::max(in_width, in_height);
-	float fx = max_d;
-	float fy = max_d;
-	float cx = (float)in_width / 2.0f;
-	float cy = (float)in_height / 2.0f;
-
-	float A = -(far + near) / (far - near);
-	float B = -(2 * far * near) / (far - near);
-	glm::mat4 projt = {fx / cx, 0.0f, 0.0f, 0.0f,
-					   0.0f, fy / cy, 0.0f, 0.0f,
-					   0.0f, 0.0f, A, B,
-					   0.0f, 0.0f, -1.0f, 0.0f};
-	return glm::transpose(projt);
-}
-
-std::shared_ptr<Renderer> loadAssets()
-{
-
-	//load objects
-	ObjectLoader *objL = ObjectLoader::getInstance();
-	//std::vector<Mesh> meshesObj1 = objL->loadObjectFromFile("res/objects/monkey.obj", Meshtype::PN);
-	//Mesh cubeMesh = objL->loadCubeVTN();
-
-	std::vector<std::shared_ptr<Mesh>> cubeMesh = objL->loadObjectFromFile("res/objects/cube.obj",Meshtype::PNC);
-	std::vector<std::shared_ptr<Mesh>> desertMesh = objL->loadObjectFromFile("res/objects/desert.obj", Meshtype::PNC);
-	std::vector<std::shared_ptr<Mesh>> cameraMesh = objL->loadObjectFromFile("res/objects/camera.obj", Meshtype::PNC);
-	std::vector<std::shared_ptr<Mesh>> pointLightMesh = objL->loadObjectFromFile("res/objects/pointLight.obj", Meshtype::PNC);
-	std::vector<std::shared_ptr<Mesh>> directionalLightMesh = objL->loadObjectFromFile("res/objects/directionalLight.obj", Meshtype::PNC);
-	objL->~ObjectLoader();
-
-	//load shaders
-	std::shared_ptr<Shader> shader = std::make_shared<Shader>("res/shaders/lightingMaterial.shader");
-	std::shared_ptr<Shader> normalShader = std::make_shared<Shader>("res/shaders/normal.shader");
-
-	//load textures
-	//std::shared_ptr<Texture> containerDiffuseTexture = std::make_shared<Texture>("res/textures/container_d.png");
-	//std::shared_ptr<Texture> containerSpecularTexture = std::make_shared<Texture>("res/textures/container_s.png");
-
-	//create materials
-	//Material gold (glm::vec4(0.24725,0.1995,0.0745,1.0),glm::vec4(0.75164,0.60648,0.22648,1.0),glm::vec4(0.628281,0.555802,0.366065,1.0),0.1);
-	//Material box(containerDiffuseTexture, containerSpecularTexture, 10.0,shader);
-
-	//create renderer
-	std::shared_ptr<Renderer> renderer;
-
-	//create initial objects
-
-	//cameras
-	std::shared_ptr<SOCamera> cameraZero = std::make_shared<SOCamera>(CameraController::getInstance()->getCamera(cam0), "CameraZero", cameraMesh, shader, renderer);
-	cameraZero->setHidden(false);
-	gameObjects.push_back(cameraZero);
-
-	std::shared_ptr<SOCamera> cameraOne = std::make_shared<SOCamera>(CameraController::getInstance()->getCamera(cam1), "CameraOne", cameraMesh, shader, renderer);
-	cameraOne->setHidden(false);
-	gameObjects.push_back(cameraOne);
-	
-	//light
-	std::shared_ptr<SOLight> lightZero = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(light0),"LightZero",directionalLightMesh, shader, renderer);
-	lightZero->setHidden(false);
-	gameObjects.push_back(lightZero);
-
-	std::shared_ptr<SOLight> lightOne = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(light1), "LightOne", pointLightMesh, shader, renderer);
-	lightOne->setHidden(false);
-	gameObjects.push_back(lightOne);
-	
-	std::shared_ptr<SceneObject> test = std::make_shared<SceneObject>("TestMesh", desertMesh, shader, renderer);
-	//test->setModelMatrix(glm::rotate(glm::translate(glm::mat4(1.0), ), glm::radians(45.0f), glm::vec3(0.0f,	1.0f, 0.0f)));
-	test->setTranslation(glm::vec3(0, 0, -10));
-	test->setRotationY(glm::radians(45.0f));
-
-	test->setScale(glm::vec3(0.1));
-	test->setHidden(false);
-	gameObjects.push_back(test);
-
-	return renderer;
-}
-
 void renderUI()
 {
 	// Start the Dear ImGui frame
@@ -195,11 +98,7 @@ void renderUI()
 	//TODO: render UI
 	ImGui::Begin("Objects");
 
-	for (std::shared_ptr<SceneObject> object : gameObjects) {
-		//if (object == lightOne) {
-			object->onImGuiRender();
-		//}
-	}
+	sceneManager->renderImGui();
 
 	ImGui::End();
 
@@ -287,23 +186,10 @@ int main(int argc, char *argv[])
 		return -1;
 
 	{
-		//setup Lighting
-		LightController* lightController = LightController::getInstance();
-		light0 = lightController->addDirectionalLightSource(glm::vec3(1.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
-
-		light1 = lightController->addLightSource(glm::vec3(10, 0.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
-
-		//create CameraController
-		CameraController* cameraController = CameraController::getInstance();
-
-		//add camera
-		//glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, 0.0f, 100.0f)
-		//glm::mat4 proj = glm::perspective(45.0f, (width / (float)height), 0.1f, 100.0f);
-		cam0 = cameraController->addCamera(glm::vec3(10.0, 10.0, 5.0), glm::normalize(glm::vec3(-1.0, -1.0, -1.0)), glm::vec3(0.0, 1.0, 0.0), createProj(width, height));
-		cam1 = cameraController->addCamera(glm::vec3(0.0, 0.0, 0.0), glm::normalize(glm::vec3(0.0, 0.0, -1.0)), glm::vec3(0.0, 1.0, 0.0), createProj(width, height));
-
-		//create renderer and load assets
-		std::shared_ptr<Renderer> renderer = loadAssets();
+		//Load scene and create Renderer
+		sceneManager = SceneManager::getInstance();
+		sceneManager->init(width, height);
+		std::shared_ptr<Renderer> renderer = sceneManager->loadInitialScene(); 
 
 		//setup ImGUI
 		ImGui::CreateContext();
@@ -329,11 +215,8 @@ int main(int argc, char *argv[])
 
 			//render objects
 			float deltaTime = glfwGetTime() - time;
-			for (size_t j = 0; j < gameObjects.size(); j++)
-			{
-				gameObjects[j]->onUpdate(deltaTime);
-				gameObjects[j]->onRender();
-			}
+			sceneManager->updateObjects(deltaTime);
+			sceneManager->renderObjects();
 
 			//render ui
 			renderUI();
@@ -346,9 +229,6 @@ int main(int argc, char *argv[])
 			//update time
 			time = glfwGetTime();
 		}
-
-		gameObjects.clear();
-		ui_textures.clear();
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();

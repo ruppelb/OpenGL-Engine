@@ -1,15 +1,17 @@
 #include "CameraObject.h"
 
-SOCamera::SOCamera(Camera* camera, std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, std::vector<Material> overrideMaterials)
-	:SceneObject(name,meshes, s, renderer, overrideMaterials),m_camera(camera)
+SOCamera::SOCamera(int cameraId, std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, std::vector<Material> overrideMaterials)
+	:SceneObject(name,meshes, s, renderer, overrideMaterials), m_cameraId(cameraId)
 {
+	m_camera = CameraController::getInstance()->getCamera(cameraId);
 	//set initial position and rotation according to camera position and rotation
 	setModelMatrix(glm::inverse(m_camera->view));
 }
 
-SOCamera::SOCamera(Camera* camera, std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, Material* overrideMaterial)
-	:SceneObject(name, mesh, s, renderer, overrideMaterial), m_camera(camera)
+SOCamera::SOCamera(int cameraId, std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, Material* overrideMaterial)
+	:SceneObject(name, mesh, s, renderer, overrideMaterial), m_cameraId(cameraId)
 {
+	m_camera = CameraController::getInstance()->getCamera(cameraId);
 	//set initial position and rotation according to camera position and rotation
 	setModelMatrix(glm::inverse(m_camera->view));
 }
@@ -20,6 +22,12 @@ void SOCamera::onUpdate(float deltaTime)
 
 	//align object pose with camera pose
 	setModelMatrix(glm::inverse(m_camera->view));
+}
+void SOCamera::setFront(glm::vec3 front)
+{
+	//normalize in case it is not
+	front = glm::normalize(front);
+	CameraController::getInstance()->setFront(front, m_cameraId);
 }
 /*
 void SOCamera::onImGuiRender()
