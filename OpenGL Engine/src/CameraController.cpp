@@ -222,6 +222,17 @@ void CameraController::addYaw(float yaw, int camIndex)
 	}
 }
 
+Camera* CameraController::getCamera(int camIndex)
+{
+	std::map<int, Camera*>::iterator itr;
+	itr = this->cameras.find(camIndex);
+	if (itr != this->cameras.end()) {
+		return itr->second;
+	}else {
+		return nullptr;
+	}
+}
+
 glm::mat4 CameraController::getViewProj(int camIndex)
 {
 	if (camIndex == -1)

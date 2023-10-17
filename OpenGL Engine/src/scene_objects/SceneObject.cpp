@@ -131,7 +131,7 @@ glm::mat4 SceneObject::getModelMatrix()
 	return glm::scale(glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.0), m_translation), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)), m_scale) * m_model;
 }
 
-glm::mat4 SceneObject::getModelMatrixForNormals()
+glm::mat4 SceneObject::getModelMatrixForDirections()
 {
 	return glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)) * m_model;
 }

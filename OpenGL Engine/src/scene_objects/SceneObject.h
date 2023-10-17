@@ -30,7 +30,7 @@ public:
 
 	void setModelMatrix(glm::mat4 model);
 	glm::mat4 getModelMatrix();
-	glm::mat4 getModelMatrixForNormals();
+	glm::mat4 getModelMatrixForDirections();
 
 	void setHidden(bool state);
 

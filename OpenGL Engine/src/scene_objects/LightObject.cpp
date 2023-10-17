@@ -66,7 +66,7 @@ void SOLight::onUpdate(float deltaTime)
 		m_lightSource->position = getTranslation();
 		break;
 	case Directional:
-		m_lightSource->direction = glm::normalize(getModelMatrixForNormals() * glm::vec4(0.0, 0.0, -1.0, 1.0));
+		m_lightSource->direction = glm::normalize(getModelMatrixForDirections() * glm::vec4(0.0, 0.0, -1.0, 1.0));
 		break;
 	}
 }

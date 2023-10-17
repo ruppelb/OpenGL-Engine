@@ -15,6 +15,7 @@
 #include "CameraController.h"
 #include "scene_objects/SceneObject.h"
 #include "scene_objects/LightObject.h"
+#include "scene_objects/CameraObject.h"
 #include "LightController.h"
 #include "Material.h"
 #include "ogl_UI.h"
@@ -39,11 +40,11 @@ using namespace std;
 std::vector<std::shared_ptr<Texture> > ui_textures;
 std::vector<std::shared_ptr<SceneObject> > gameObjects;
 
-std::shared_ptr<SceneObject> cameraZero;
-std::shared_ptr<SceneObject> cameraOne;
+int light0;
+int light1;
 
-std::shared_ptr<SOLight> lightZero;
-std::shared_ptr<SOLight> lightOne;
+int cam0;
+int cam1;
 
 //TODO: Add gameobjects for the two initial cameras and light source. Also add one initial primitive shape
 
@@ -155,20 +156,20 @@ std::shared_ptr<Renderer> loadAssets()
 	//create initial objects
 
 	//cameras
-	cameraZero = std::make_shared<SceneObject>("CameraZero",cameraMesh, shader, renderer);
+	std::shared_ptr<SOCamera> cameraZero = std::make_shared<SOCamera>(CameraController::getInstance()->getCamera(cam0), "CameraZero", cameraMesh, shader, renderer);
 	cameraZero->setHidden(false);
 	gameObjects.push_back(cameraZero);
 
-	cameraOne = std::make_shared<SceneObject>("CameraOne", cameraMesh, shader, renderer);
+	std::shared_ptr<SOCamera> cameraOne = std::make_shared<SOCamera>(CameraController::getInstance()->getCamera(cam1), "CameraOne", cameraMesh, shader, renderer);
 	cameraOne->setHidden(false);
 	gameObjects.push_back(cameraOne);
 	
 	//light
-	lightZero = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(1),"LightZero",directionalLightMesh, shader, renderer);
+	std::shared_ptr<SOLight> lightZero = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(light0),"LightZero",directionalLightMesh, shader, renderer);
 	lightZero->setHidden(false);
 	gameObjects.push_back(lightZero);
 
-	lightOne = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(2), "LightOne", pointLightMesh, shader, renderer);
+	std::shared_ptr<SOLight> lightOne = std::make_shared<SOLight>(LightController::getInstance()->getLightSource(light1), "LightOne", pointLightMesh, shader, renderer);
 	lightOne->setHidden(false);
 	gameObjects.push_back(lightOne);
 	
@@ -288,21 +289,21 @@ int main(int argc, char *argv[])
 	{
 		//setup Lighting
 		LightController* lightController = LightController::getInstance();
-		int light0 = lightController->addDirectionalLightSource(glm::vec3(1.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
+		light0 = lightController->addDirectionalLightSource(glm::vec3(1.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
 
-		int light1 = lightController->addLightSource(glm::vec3(10, 0.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
-
-		//create renderer and load assets
-		std::shared_ptr<Renderer> renderer = loadAssets();
+		light1 = lightController->addLightSource(glm::vec3(10, 0.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
 
 		//create CameraController
-		CameraController *cameraController = CameraController::getInstance();
+		CameraController* cameraController = CameraController::getInstance();
 
 		//add camera
 		//glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, 0.0f, 100.0f)
 		//glm::mat4 proj = glm::perspective(45.0f, (width / (float)height), 0.1f, 100.0f);
-		int cam0 = cameraController->addCamera(glm::vec3(10.0, 10.0, 5.0), glm::normalize(glm::vec3(-1.0, -1.0, -1.0)), glm::vec3(0.0, 1.0, 0.0), createProj(width, height));
-		int cam1 = cameraController->addCamera(glm::vec3(0.0, 0.0, 0.0), glm::normalize(glm::vec3(0.0, 0.0, -1.0)), glm::vec3(0.0, 1.0, 0.0), createProj(width, height));
+		cam0 = cameraController->addCamera(glm::vec3(10.0, 10.0, 5.0), glm::normalize(glm::vec3(-1.0, -1.0, -1.0)), glm::vec3(0.0, 1.0, 0.0), createProj(width, height));
+		cam1 = cameraController->addCamera(glm::vec3(0.0, 0.0, 0.0), glm::normalize(glm::vec3(0.0, 0.0, -1.0)), glm::vec3(0.0, 1.0, 0.0), createProj(width, height));
+
+		//create renderer and load assets
+		std::shared_ptr<Renderer> renderer = loadAssets();
 
 		//setup ImGUI
 		ImGui::CreateContext();
@@ -322,9 +323,6 @@ int main(int argc, char *argv[])
 		// Loop until the user closes the window
 		while (UI.contLoop())
 		{
-			//update camera positions
-			cameraZero->setModelMatrix(glm::inverse(cameraController->getView(cam0)));
-			cameraOne->setModelMatrix(glm::inverse(cameraController->getView(cam1)));
 
 			// Render here
 			renderer->clear();
@@ -351,10 +349,6 @@ int main(int argc, char *argv[])
 
 		gameObjects.clear();
 		ui_textures.clear();
-		cameraOne.reset();
-		cameraZero.reset();
-		lightZero.reset();
-		lightOne.reset();
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();

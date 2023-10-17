@@ -90,6 +90,9 @@
     <ClCompile Include="src\SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene_objects\CameraObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CameraController.h">
@@ -1014,6 +1017,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene_objects\CameraObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

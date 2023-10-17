@@ -22,6 +22,7 @@
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
+    <ClCompile Include="src\scene_objects\CameraObject.cpp" />
     <ClCompile Include="src\scene_objects\SceneObject.cpp" />
     <ClCompile Include="src\scene_objects\LightObject.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -48,6 +49,7 @@
   <ItemGroup>
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\CameraController.h" />
+    <ClInclude Include="src\scene_objects\CameraObject.h" />
     <ClInclude Include="src\scene_objects\SceneObject.h" />
     <ClInclude Include="src\scene_objects\LightObject.h" />
     <ClInclude Include="src\IndexBuffer.h" />

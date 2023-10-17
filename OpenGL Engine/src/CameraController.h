@@ -73,6 +73,8 @@ public:
 
 	void addYaw(float yaw, int camIndex = -1);
 
+	Camera* getCamera(int camIndex);
+
 	glm::mat4 getViewProj(int camIndex = -1);
 
 	glm::mat4 getView(int camIndex = -1);
