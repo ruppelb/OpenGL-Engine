@@ -25,6 +25,12 @@ void cursor_callback_global(GLFWwindow* window, double xpos, double ypos) {
 }
 
 
+void scroll_callback_global(GLFWwindow* window, double xoffset, double yoffset) {
+	static_cast<UI_handler*>(glfwGetWindowUserPointer(window))->
+		scroll_callback(window, xoffset, yoffset);
+}
+
+
 
 // register the callbacks with the window manager
 void UI_handler::setCallbacks(GLFWwindow* window)
@@ -32,6 +38,7 @@ void UI_handler::setCallbacks(GLFWwindow* window)
 	//glfwSetFramebufferSizeCallback(window, reshape_global);
 	glfwSetKeyCallback(window, key_callback_global);
 	glfwSetCursorPosCallback(window, cursor_callback_global);
+	glfwSetScrollCallback(window, scroll_callback_global);
 }
 
 
@@ -167,6 +174,23 @@ void UI_handler::cursor_callback(GLFWwindow* window, double xposIn, double yposI
 	newPose[3] = currentPose[3];*/
 }
 
+void UI_handler::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{	
+	if (yoffset > 0) {
+		//increase flight speed
+		if (cameraFlightSpeed + 0.5 <= MAX_FLIGHT_SPEED) {
+
+			cameraFlightSpeed += 0.5;
+		}
+	}
+	else {
+		//decrease flight speed
+		if (cameraFlightSpeed - 0.5 >= MIN_FLIGHT_SPEED) {
+			cameraFlightSpeed -= 0.5;
+		}
+	}
+}
+
 
 
 // keyboard events
@@ -174,7 +198,7 @@ void UI_handler::keyboard_EventHandler(GLFWwindow* window,float deltaTime)
 {
 	glfwPollEvents();
 
-	float cameraSpeed = .2;//static_cast<float>(2.5 * deltaTime);
+	float cameraSpeed = static_cast<float>(cameraFlightSpeed * deltaTime);
 	if (W_pressed) {
 		//go in camera forward direction
 		

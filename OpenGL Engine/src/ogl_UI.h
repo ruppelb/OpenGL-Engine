@@ -12,6 +12,9 @@
 #include <GLFW/glfw3.h>
 #include "CameraController.h"
 
+#define MAX_FLIGHT_SPEED 30.0
+#define MIN_FLIGHT_SPEED 2.5
+
 //--------------
 class UI_handler
 //--------------
@@ -39,6 +42,7 @@ class UI_handler
 	int currentCamera = 0;
 	bool firstCam = true;
 	bool cameraFlightMode = false;
+	float cameraFlightSpeed = 15.0;
 
 public:
 	// constructors
@@ -56,6 +60,7 @@ public:
 	void win_reshape(GLFWwindow* window, int winWidth, int winHeight);
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void cursor_callback(GLFWwindow* window, double xposIn, double yposIn);
+	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 	void keyboard_EventHandler(GLFWwindow* window, float deltaTime);
 };

@@ -205,16 +205,20 @@ int main(int argc, char *argv[])
 
 		//init time measurement
 		float time = glfwGetTime();
+		float deltaTime = 0.0;
 		
 		// Loop until the user closes the window
 		while (UI.contLoop())
 		{
+			//update time
+			float currentTime = static_cast<float>(glfwGetTime());
+			deltaTime = currentTime - time;
+			time = currentTime;
 
 			// Render here
 			renderer->clear();
 
 			//render objects
-			float deltaTime = glfwGetTime() - time;
 			sceneManager->updateObjects(deltaTime);
 			sceneManager->renderObjects();
 
@@ -225,9 +229,6 @@ int main(int argc, char *argv[])
 
 			// UI (GUI: event handling)
 			UI.keyboard_EventHandler(window,deltaTime);
-
-			//update time
-			time = glfwGetTime();
 		}
 	}
 
