@@ -77,16 +77,17 @@ void SOLight::onUpdate(float deltaTime)
 
 void SOLight::onImGuiRender()
 {
-	ImGui::BeginChild(m_name.c_str(), ImVec2(450, 150), true);
-	ImGui::Text(m_name.c_str());
-	if (m_lightSource->type == Point) {
-		ImGui::SliderFloat("Radius", &m_lightSource->radius, 0.1f, 100);
-		ImGui::SliderFloat("Falloff", &m_lightSource->falloff, 0.1f, 100);
+	ImGui::BeginChild(m_name.c_str(), ImVec2(500, 150), true);
+	if (ImGui::CollapsingHeader(m_name.c_str())) {
+		if (m_lightSource->type == Point) {
+			ImGui::DragFloat("Radius", &m_lightSource->radius,0.1f, 0.1f, 100);
+			ImGui::DragFloat("Falloff", &m_lightSource->falloff, 0.1f,0.1f, 100);
+		}
+		ImGui::DragFloat4("Color", &m_lightSource->color.x, 0.01f,0.0f, 1.0f);
+		ImGui::DragFloat3("Translation ", &m_translation.x, 0.01f, -30.0f, 30.0f);
+		ImGui::DragFloat("Rotation X ", &m_angleX, 0.1f, -360.f, 360.0f);
+		ImGui::DragFloat("Rotation Y ", &m_angleY, 0.1f, -360.f, 360.0f );
+		ImGui::DragFloat("Rotation Z ", &m_angleZ, 0.1f, -360.f, 360.0f);
 	}
-	ImGui::SliderFloat4("Color", &m_lightSource->color.x, 0.0, 1.0);
-	ImGui::SliderFloat3("Translation ", &m_translation.x, -30.0f, 30.0f);
-	ImGui::SliderFloat("Rotation X ", &m_angleX, 0.f, 6.2831f);
-	ImGui::SliderFloat("Rotation Y ", &m_angleY, 0.f, 6.2831f);
-	ImGui::SliderFloat("Rotation Z ", &m_angleZ, 0.f, 6.2831f);
 	ImGui::EndChild();
 }

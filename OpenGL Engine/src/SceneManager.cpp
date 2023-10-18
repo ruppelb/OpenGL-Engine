@@ -45,7 +45,7 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	std::shared_ptr<SceneObject> test = std::make_shared<SceneObject>("TestMesh", desertMesh, m_materialShader, m_renderer);
 	//test->setModelMatrix(glm::rotate(glm::translate(glm::mat4(1.0), ), glm::radians(45.0f), glm::vec3(0.0f,	1.0f, 0.0f)));
 	test->setTranslation(glm::vec3(0, 0, -10));
-	test->setRotationY(glm::radians(45.0f));
+	test->setRotationY(45.0f);
 	test->setScale(glm::vec3(0.1));
 	test->setHidden(false);
 	sceneObjects.push_back(test);

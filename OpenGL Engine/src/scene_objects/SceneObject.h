@@ -53,9 +53,9 @@ protected:
 	std::vector<Material> m_overrideMaterials;
 	glm::vec3 m_scale;
 	glm::vec3 m_translation;
-	float m_angleX = 0.0;
-	float m_angleY = 0.0;
-	float m_angleZ = 0.0;
+	float m_angleX = 0.0; //degrees
+	float m_angleY = 0.0; //degrees
+	float m_angleZ = 0.0; //degrees
 	bool m_overrideMeshMaterials = false;
 
 	CameraController* m_cameraController;

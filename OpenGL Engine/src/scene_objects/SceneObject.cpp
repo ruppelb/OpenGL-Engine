@@ -60,9 +60,9 @@ void SceneObject::onUpdate(float deltaTime)
 void SceneObject::onRender()
 {
 	if (!m_hidden) {
-		glm::mat4 appliedTransform = glm::scale(glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.0), m_translation), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)), m_scale) * m_model;
+		glm::mat4 appliedTransform = glm::scale(glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.0), m_translation), glm::radians(m_angleX), glm::vec3(1.0, 0, 0)), glm::radians(m_angleY), glm::vec3(0.0, 1.0, 0.0)), glm::radians(m_angleZ), glm::vec3(0.0, 0.0, 1.0)), m_scale) * m_model;
 		glm::mat4 mvp = m_cameraController->getViewProj() * appliedTransform;
-		glm::mat4 normalMat = glm::transpose(glm::inverse(glm::rotate(glm::rotate(glm::rotate(m_model, m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)))); //glm::scale(m_model,m_scale)
+		glm::mat4 normalMat = glm::transpose(glm::inverse(glm::rotate(glm::rotate(glm::rotate(m_model, glm::radians(m_angleX), glm::vec3(1.0, 0, 0)), glm::radians(m_angleY), glm::vec3(0.0, 1.0, 0.0)), glm::radians(m_angleZ), glm::vec3(0.0, 0.0, 1.0)))); //glm::scale(m_model,m_scale)
 
 		//set shader uniforms
 		m_shader->bind();
@@ -109,11 +109,12 @@ void SceneObject::onRender()
 void SceneObject::onImGuiRender()
 { 
 	ImGui::BeginChild(m_name.c_str(),ImVec2(450,110),true);
-	ImGui::Text(m_name.c_str());
-	ImGui::SliderFloat3("Translation ", &m_translation.x, -30.0f, 30.0f);
-	ImGui::SliderFloat("Rotation X ", &m_angleX, 0.f, 6.2831f);
-	ImGui::SliderFloat("Rotation Y ", &m_angleY, 0.f, 6.2831f);
-	ImGui::SliderFloat("Rotation Z ", &m_angleZ, 0.f, 6.2831f);
+	if (ImGui::CollapsingHeader(m_name.c_str())) {
+		ImGui::DragFloat3("Translation ", &m_translation.x, 0.01f, -30.0f, 30.0f);
+		ImGui::DragFloat("Rotation X ", &m_angleX, 0.1f, -360.f, 360.0f, "%.3f");
+		ImGui::DragFloat("Rotation Y ", &m_angleY, 0.1f, -360.f, 360.0f, "%.3f");
+		ImGui::DragFloat("Rotation Z ", &m_angleZ,0.1f, -360.f, 360.0f,"%.3f"); //ImGuiSliderFlags_AlwaysClamp
+	}
 	ImGui::EndChild();
 }
 
@@ -128,12 +129,12 @@ void SceneObject::setModelMatrix(glm::mat4 model)
 
 glm::mat4 SceneObject::getModelMatrix()
 {
-	return glm::scale(glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.0), m_translation), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)), m_scale) * m_model;
+	return glm::scale(glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.0), m_translation), glm::radians(m_angleX), glm::vec3(1.0, 0, 0)), glm::radians(m_angleY), glm::vec3(0.0, 1.0, 0.0)), glm::radians(m_angleZ), glm::vec3(0.0, 0.0, 1.0)), m_scale) * m_model;
 }
 
 glm::mat4 SceneObject::getModelMatrixForDirections()
 {
-	return glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), m_angleX, glm::vec3(1.0, 0, 0)), m_angleY, glm::vec3(0.0, 1.0, 0.0)), m_angleZ, glm::vec3(0.0, 0.0, 1.0)) * m_model;
+	return glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), glm::radians(m_angleX), glm::vec3(1.0, 0, 0)), glm::radians(m_angleY), glm::vec3(0.0, 1.0, 0.0)), glm::radians(m_angleZ), glm::vec3(0.0, 0.0, 1.0)) * m_model;
 }
 
 void SceneObject::setHidden(bool state)
