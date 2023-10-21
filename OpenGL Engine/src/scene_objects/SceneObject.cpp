@@ -108,14 +108,15 @@ void SceneObject::onRender()
 
 void SceneObject::onImGuiRender()
 { 
-	ImGui::BeginChild(m_name.c_str(),ImVec2(450,110),true);
+	
 	if (ImGui::CollapsingHeader(m_name.c_str())) {
+		ImGui::BeginChild(m_name.c_str(), ImVec2(420, 95), true);
 		ImGui::DragFloat3("Translation ", &m_translation.x, 0.01f, -30.0f, 30.0f);
 		ImGui::DragFloat("Rotation X ", &m_angleX, 0.1f, -360.f, 360.0f, "%.3f");
 		ImGui::DragFloat("Rotation Y ", &m_angleY, 0.1f, -360.f, 360.0f, "%.3f");
 		ImGui::DragFloat("Rotation Z ", &m_angleZ,0.1f, -360.f, 360.0f,"%.3f"); //ImGuiSliderFlags_AlwaysClamp
+		ImGui::EndChild();
 	}
-	ImGui::EndChild();
 }
 
 void SceneObject::setModelMatrix(glm::mat4 model)

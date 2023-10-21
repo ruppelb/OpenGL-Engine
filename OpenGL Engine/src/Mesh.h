@@ -42,6 +42,11 @@ struct VertexPN {
 struct VertexP {
     // position
     glm::vec3 Position;
+
+    VertexP(float px, float py, float pz)
+        :Position(glm::vec3(px, py, pz))
+    {}
+    VertexP() {};
 };
 
 class Mesh {

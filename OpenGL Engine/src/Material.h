@@ -5,10 +5,11 @@
 
 #include <memory>
 
-enum MaterialType{Colored,Mapped,Basic,ShininessOnly};
+enum MaterialType{Colored,Mapped,Basic,ShininessOnly,NONE};
 
 class Material {
 public:
+	Material();
 	Material(float shininess);
 	Material(float specularStrength, float shininess);
 	Material(glm::vec4 ambientColor, glm::vec4 diffuseColor, glm::vec4 specularColor, float shininess);

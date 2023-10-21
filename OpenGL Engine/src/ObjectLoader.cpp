@@ -101,6 +101,21 @@ std::shared_ptr<Mesh> ObjectLoader::loadCubeVTN()
 	return std::make_shared<Mesh>(vertices,indices,Material(1.0));
 }
 
+std::shared_ptr<Mesh> ObjectLoader::loadPlaneV()
+{
+	std::vector<VertexP> vertices;
+	vertices.push_back(VertexP(1.0, 1.0, 0.0));		// top right			0
+	vertices.push_back(VertexP(-1.0, -1.0, 0.0));	// bottom left			1
+	vertices.push_back(VertexP(-1.0, 1.0, 0.0));	// top left				2
+	vertices.push_back(VertexP(-1.0, -1.0, 0.0));  // bottom left			3
+	vertices.push_back(VertexP(1.0, 1.0, 0.0));	    // top right			4
+	vertices.push_back(VertexP(1.0, -1.0, 0.0));   // bottom right         5
+
+	std::vector<unsigned int> indices{0,1,2,3,4,5};
+
+	return std::make_shared<Mesh>(vertices,indices,Material());
+}
+
 ObjectLoader::~ObjectLoader()
 {
 
@@ -117,7 +132,6 @@ std::shared_ptr<Mesh> ObjectLoader::processMesh(aiMesh* mesh, const aiScene* sce
 			indices.push_back(face.mIndices[j]);
 		}
 	}
-
 	switch (type) {
 	case P:
 		{

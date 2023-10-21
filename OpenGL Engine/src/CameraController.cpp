@@ -11,7 +11,7 @@ CameraController* CameraController::getInstance()
 	return (inst_);
 }
 
-int CameraController::addCamera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, glm::mat4 perspectiveProj)
+int CameraController::addCamera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, glm::mat4 perspectiveProj, float nearZ, float farZ)
 {
 	Camera* cam = new Camera;
 	cam->proj = perspectiveProj;
@@ -19,6 +19,8 @@ int CameraController::addCamera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, gl
 	cam->pos = pos;
 	cam->front = front;
 	cam->up = up;
+	cam->nearZ = nearZ;
+	cam->farZ = farZ;
 
 	this->highestIndex++;
 	this->cameras.insert(std::make_pair(this->highestIndex, cam));
@@ -305,16 +307,45 @@ float CameraController::getYaw(int camIndex)
 {
 	if (camIndex == -1)
 		camIndex = activeCamIndex;
-
-	return this->cameras[camIndex]->yaw;
+	if (containsCameraIndex(camIndex)) {
+		return this->cameras[camIndex]->yaw;
+	}
+	return 0.0;
 }
 
 float CameraController::getPitch(int camIndex)
 {
 	if (camIndex == -1)
 		camIndex = activeCamIndex;
+	if (containsCameraIndex(camIndex)) {
+		return this->cameras[camIndex]->pitch;
+	}
 
-	return this->cameras[camIndex]->pitch;
+	return 0.0;
+}
+
+float CameraController::getNearZ(int camIndex)
+{
+	if (camIndex == -1)
+		camIndex = activeCamIndex;
+
+	if (containsCameraIndex(camIndex)) {
+		return this->cameras[camIndex]->nearZ;
+	}
+
+	return 0.0;
+}
+
+float CameraController::getFarZ(int camIndex)
+{
+	if (camIndex == -1)
+		camIndex = activeCamIndex;
+
+	if (containsCameraIndex(camIndex)) {
+		return this->cameras[camIndex]->farZ;
+	}
+
+	return 0.0;
 }
 
 int CameraController::getCameraCount()

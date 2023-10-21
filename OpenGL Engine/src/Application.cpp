@@ -40,6 +40,8 @@ void reshape(GLFWwindow *window, int in_width, int in_height)
 
 	width = in_width;
 	height = in_height;
+
+	
 	glViewport(0, 0, (GLsizei)in_width, (GLsizei)in_height);
 
 	float near = 0.1f;
@@ -58,7 +60,9 @@ void reshape(GLFWwindow *window, int in_width, int in_height)
 					   0.0f, 0.0f, -1.0f, 0.0f};
 
 	CameraController::getInstance()->setProjection(glm::transpose(projt));
+	
 
+	//CameraController::getInstance()->setProjection(glm::perspective(glm::radians(30.0), 4/3.0, 0.1, 500.0));
 	/*
 	// Calculate the proper aspect ratio to use based on window ratio
 	float ratioX = width / (float)G_WIDTH;
@@ -96,7 +100,9 @@ void renderUI()
 	ImGui::NewFrame();
 
 	//TODO: render UI
-	ImGui::Begin("Objects");
+	ImGui::SetNextWindowPos(ImVec2(0,0));
+	ImGui::SetNextWindowSize(ImVec2(435, 800));
+	ImGui::Begin("Objects",0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
 
 	sceneManager->renderImGui();
 
@@ -178,6 +184,7 @@ int main(int argc, char *argv[])
 	UI.setCallbacks(window);
 	glfwSetFramebufferSizeCallback(window, reshape);
 	reshape(window, width, height);
+
 	// Initialize the GL library
 	initGL(argc, argv);
 

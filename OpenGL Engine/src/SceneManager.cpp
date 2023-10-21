@@ -50,6 +50,8 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	test->setHidden(false);
 	sceneObjects.push_back(test);
 
+	//create scene grid
+	gridObject = std::make_shared<GridObject>(m_objL->loadPlaneV(), m_gridShader, m_renderer);
 
 
 	return m_renderer;
@@ -77,7 +79,8 @@ std::shared_ptr<SOCamera> SceneManager::addCameraObject(glm::vec3 position, Came
 		}
 		break;
 	case Perspective:
-		id = cameraController->addCamera(position, glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0), createProj(m_width, m_height));
+		//addPerpectiveCamera(position, glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0), glm::radians(30.0), 4/3.0, 0.1, 500);
+		id = cameraController->addCamera(position, glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0), createProj(m_width, m_height),0.1,500);
 		if (id > -1) {
 			name.append(std::to_string(id - 1));
 			cameraObject = std::make_shared<SOCamera>(id, name, cameraMesh, m_materialShader, m_renderer);
@@ -123,6 +126,8 @@ std::shared_ptr<SOLight> SceneManager::addLightObject(glm::vec3 position, LightT
 
 void SceneManager::updateObjects(float deltaTime)
 {
+	gridObject->onUpdate(deltaTime);
+
 	for (std::shared_ptr<SceneObject> object : sceneObjects) {
 		object->onUpdate(deltaTime);
 	}
@@ -130,9 +135,15 @@ void SceneManager::updateObjects(float deltaTime)
 
 void SceneManager::renderObjects()
 {
+
+	
+	
 	for (std::shared_ptr<SceneObject> object : sceneObjects) {
 		object->onRender();
 	}
+
+	//render scene grid last, so that it does not obstruct other objects
+	gridObject->onRender();
 }
 
 void SceneManager::renderImGui()
@@ -166,6 +177,7 @@ void SceneManager::loadAssets()
 	//load shaders
 	m_materialShader = std::make_shared<Shader>("res/shaders/lightingMaterial.shader");
 	m_normalShader = std::make_shared<Shader>("res/shaders/normal.shader");
+	m_gridShader = std::make_shared<Shader>("res/shaders/grid.shader");
 
 	//load textures
 	//std::shared_ptr<Texture> containerDiffuseTexture = std::make_shared<Texture>("res/textures/container_d.png");

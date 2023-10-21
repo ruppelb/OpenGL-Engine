@@ -29,3 +29,12 @@ void Renderer::draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 
 	GLCall(glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr));
 }
+
+void Renderer::drawLines(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
+{
+	shader.bind();
+	va.bind();
+	ib.bind();
+
+	GLCall(glDrawElements(GL_LINES, ib.getCount(), GL_UNSIGNED_INT, nullptr));
+}

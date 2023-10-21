@@ -16,6 +16,8 @@ struct Camera {
 	glm::vec3 up;
 	glm::vec3 pos;
 	glm::vec3 front;
+	float nearZ;
+	float farZ;
 	float yaw = -90.0f;
 	float pitch = 0.0f;
 };
@@ -25,15 +27,11 @@ struct CameraOrtho: public Camera {
 	float right;
 	float bottom;
 	float top;
-	float nearZ;
-	float farZ;
 };
 
 struct CameraPerspective : public Camera {
 	float fovy;
 	float aspect;
-	float nearZ;
-	float farZ;
 };
 
 class CameraController {
@@ -45,7 +43,7 @@ public:
 	void operator=(CameraController const&) = delete;
 
 
-	int addCamera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, glm::mat4 perspectiveProj);
+	int addCamera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, glm::mat4 perspectiveProj, float nearZ, float farZ);
 	
 	int addPerpectiveCamera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float fovy, float aspect, float nearZ, float farZ);
 
@@ -92,6 +90,10 @@ public:
 	float getYaw(int camIndex = -1);
 
 	float getPitch(int camIndex = -1);
+
+	float getNearZ(int camIndex = -1);
+
+	float getFarZ(int camIndex = -1);
 
 	int getCameraCount();
 private:

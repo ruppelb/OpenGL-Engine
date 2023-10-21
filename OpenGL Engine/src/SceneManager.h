@@ -9,6 +9,7 @@
 #include "scene_objects/SceneObject.h"
 #include "scene_objects/LightObject.h"
 #include "scene_objects/CameraObject.h"
+#include "GridObject.h"
 #include "ObjectLoader.h"
 
 //maintains list of gameobjects. 
@@ -51,15 +52,22 @@ private:
 	LightController* lightController;
 
 	std::vector<std::shared_ptr<Texture> > ui_textures;
+
+	//objects
 	std::vector<std::shared_ptr<SceneObject> > sceneObjects;
+	std::shared_ptr<GridObject> gridObject;
+
+	//meshes
 	std::vector<std::shared_ptr<Mesh>> cubeMesh;
 	std::vector<std::shared_ptr<Mesh>> cameraMesh;
 	std::vector<std::shared_ptr<Mesh>> pointLightMesh;
 	std::vector<std::shared_ptr<Mesh>> directionalLightMesh;
 	std::vector<std::shared_ptr<Mesh>> desertMesh;
 
+	//shaders
 	std::shared_ptr<Shader> m_materialShader;
 	std::shared_ptr<Shader> m_normalShader;
+	std::shared_ptr<Shader> m_gridShader;
 
 };
 

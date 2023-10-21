@@ -1,5 +1,10 @@
 #include "Material.h"
 
+Material::Material()
+	:m_hasMaps(false), type(NONE)
+{
+}
+
 Material::Material(float shininess)
 	:m_hasMaps(false),m_shininess(shininess),type(ShininessOnly)
 {
@@ -30,6 +35,9 @@ Material::Material(const Material& other)
 void Material::setMaterialUniforms(std::shared_ptr <Shader> shader)
 {
 	switch (type) {
+	case NONE:
+		return;
+		break;
 	case Basic:
 		shader->setUniform3f("material.specularStrength", glm::vec3(m_specularStrength));
 		break;

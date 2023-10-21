@@ -13,6 +13,7 @@ public:
 
 	std::vector<std::shared_ptr<Mesh>> loadObjectFromFile(const std::string& filepath, Meshtype type);
 	std::shared_ptr<Mesh> loadCubeVTN();
+	std::shared_ptr<Mesh> loadPlaneV();
 
 
 	ObjectLoader(ObjectLoader const&) = delete;
