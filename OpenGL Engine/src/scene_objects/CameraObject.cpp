@@ -22,6 +22,9 @@ void SOCamera::onUpdate(float deltaTime)
 
 	//align object pose with camera pose
 	setModelMatrix(glm::inverse(m_camera->view));
+
+	//hide mesh of currently selected camera
+	m_hidden = (CameraController::getInstance()->getActiveCam() == m_cameraId);
 }
 void SOCamera::setFront(glm::vec3 front)
 {
