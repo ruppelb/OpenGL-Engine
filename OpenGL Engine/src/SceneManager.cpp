@@ -31,6 +31,10 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	std::shared_ptr<Renderer> m_renderer;
 
 	//create initial objects
+	 
+	//create scene grid
+	gridObject = std::make_shared<GridObject>(m_objL->loadPlaneV(), m_gridShader, m_renderer);
+	
 	//cameras
 	std::shared_ptr<SOCamera> cameraZero = addCameraObject(glm::vec3(10.0, 10.0, 5.0), Perspective);
 	cameraZero->setFront(glm::normalize(glm::vec3(-1.0, -1.0, -1.0)));
@@ -50,14 +54,16 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	test->setHidden(false);
 	sceneObjects.push_back(test);
 
-	//create scene grid
-	gridObject = std::make_shared<GridObject>(m_objL->loadPlaneV(), m_gridShader, m_renderer);
-
+	/*
+	std::shared_ptr<Mesh> t = m_objL->loadCubeVTN(Lines);
+	std::shared_ptr<SOLine> test2 = std::make_shared<SOLine>("TestLine", t, m_materialShader, m_renderer);
+	test2->setHidden(false);
+	sceneObjects.push_back(test2);*/
 
 	return m_renderer;
 }
 
-std::shared_ptr<SceneObject> SceneManager::addSceneObjectFromFile(std::string name, std::string filepath, Meshtype meshType, Shader shader)
+std::shared_ptr<SceneObject> SceneManager::addSceneObjectFromFile(std::string name, std::string filepath, MeshType meshType, Shader shader)
 {
 	return nullptr;
 }
@@ -168,11 +174,11 @@ void SceneManager::loadAssets()
 	//std::vector<Mesh> meshesObj1 = objL->loadObjectFromFile("res/objects/monkey.obj", Meshtype::PN);
 	//Mesh cubeMesh = objL->loadCubeVTN();
 
-	cubeMesh = m_objL->loadObjectFromFile("res/objects/cube.obj", Meshtype::PNC);
-	desertMesh = m_objL->loadObjectFromFile("res/objects/desert.obj", Meshtype::PNC);
-	cameraMesh = m_objL->loadObjectFromFile("res/objects/camera.obj", Meshtype::PNC);
-	pointLightMesh = m_objL->loadObjectFromFile("res/objects/pointLight.obj", Meshtype::PNC);
-	directionalLightMesh = m_objL->loadObjectFromFile("res/objects/directionalLight.obj", Meshtype::PNC);
+	cubeMesh = m_objL->loadObjectFromFile("res/objects/cube.obj", MeshType::PNC);
+	desertMesh = m_objL->loadObjectFromFile("res/objects/desert.obj", MeshType::PNC);
+	cameraMesh = m_objL->loadObjectFromFile("res/objects/camera.obj", MeshType::PNC);
+	pointLightMesh = m_objL->loadObjectFromFile("res/objects/pointLight.obj", MeshType::PNC);
+	directionalLightMesh = m_objL->loadObjectFromFile("res/objects/directionalLight.obj", MeshType::PNC);
 
 	//load shaders
 	m_materialShader = std::make_shared<Shader>("res/shaders/lightingMaterial.shader");

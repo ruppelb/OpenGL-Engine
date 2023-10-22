@@ -7,7 +7,8 @@
 #include "VertexBufferLayout.h"
 #include "Material.h"
 
-enum Meshtype {PNT, PNC,PN,P, EMPTY};
+enum MeshType {PNT, PNC,PN,P, EMPTY};
+enum RenderType {Default,Lines};
 
 struct VertexPNT {
     // position
@@ -52,10 +53,10 @@ struct VertexP {
 class Mesh {
 public:
     Mesh();
-    Mesh(std::vector<VertexPNT> vertices, std::vector<unsigned int> indices, Material material);
-    Mesh(std::vector<VertexPNC> vertices, std::vector<unsigned int> indices, Material material);
-    Mesh(std::vector<VertexPN> vertices, std::vector<unsigned int> indices, Material material);
-    Mesh(std::vector<VertexP> vertices, std::vector<unsigned int> indices, Material material);
+    Mesh(std::vector<VertexPNT> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType = Default);
+    Mesh(std::vector<VertexPNC> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType = Default);
+    Mesh(std::vector<VertexPN> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType = Default);
+    Mesh(std::vector<VertexP> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType = Default);
     void draw(std::shared_ptr<Shader> shader, Renderer* renderer, Material* overrideMaterial = nullptr);
 
     Mesh(const Mesh& other);
@@ -66,8 +67,9 @@ private:
     std::shared_ptr<IndexBuffer> m_indexBuffer;
     std::shared_ptr<VertexBuffer> m_vertexBuffer;
     std::shared_ptr<VertexArray> m_vao;
-    Meshtype m_type;
+    MeshType m_type;
     Material m_material;
+    RenderType m_renderType;
 
     void setupMeshPNT(std::vector<VertexPNT>  vertices, std::vector<unsigned int> indices);
     void setupMeshPNC(std::vector<VertexPNC>  vertices, std::vector<unsigned int> indices);

@@ -9,6 +9,7 @@
 #include "scene_objects/SceneObject.h"
 #include "scene_objects/LightObject.h"
 #include "scene_objects/CameraObject.h"
+#include "scene_objects/LineObject.h"
 #include "GridObject.h"
 #include "ObjectLoader.h"
 
@@ -26,7 +27,7 @@ public:
 
 	std::shared_ptr<Renderer> loadInitialScene();
 
-	std::shared_ptr<SceneObject> addSceneObjectFromFile(std::string name, std::string filepath, Meshtype meshType, Shader shader); //for adding generic GameObjects. Has to specify path to Obj, Meshtype, Shader type and Name. Loads obj with meshtype. Creates Sceneobject with mesh, shader and name. TODO: add enumeration type for shader?
+	std::shared_ptr<SceneObject> addSceneObjectFromFile(std::string name, std::string filepath, MeshType meshType, Shader shader); //for adding generic GameObjects. Has to specify path to Obj, Meshtype, Shader type and Name. Loads obj with meshtype. Creates Sceneobject with mesh, shader and name. TODO: add enumeration type for shader?
 	std::shared_ptr<SOCamera> addCameraObject(glm::vec3 position, CameraType type); //for adding Cameras. uses preset mesh loaded initially.
 	std::shared_ptr<SOLight> addLightObject(glm::vec3 position, LightType type); //for adding light sources. uses preset mesh loaded initially. Position only used in case of point light
 

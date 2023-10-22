@@ -12,7 +12,7 @@ ObjectLoader* ObjectLoader::getInstance()
 	return (inst_);
 }
 
-std::vector<std::shared_ptr<Mesh>>  ObjectLoader::loadObjectFromFile(const std::string& filepath, Meshtype type)
+std::vector<std::shared_ptr<Mesh>>  ObjectLoader::loadObjectFromFile(const std::string& filepath, MeshType type)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -40,7 +40,7 @@ std::vector<std::shared_ptr<Mesh>>  ObjectLoader::loadObjectFromFile(const std::
 	return meshes;
 }
 
-std::shared_ptr<Mesh> ObjectLoader::loadCubeVTN()
+std::shared_ptr<Mesh> ObjectLoader::loadCubeVTN(RenderType renderType)
 {
 	//load data and prepare vertex arrays, shaders, and textures
 
@@ -98,10 +98,10 @@ std::shared_ptr<Mesh> ObjectLoader::loadCubeVTN()
 		21, 22, 23
 	};
 	
-	return std::make_shared<Mesh>(vertices,indices,Material(1.0));
+	return std::make_shared<Mesh>(vertices,indices,Material(1.0),renderType);
 }
 
-std::shared_ptr<Mesh> ObjectLoader::loadPlaneV()
+std::shared_ptr<Mesh> ObjectLoader::loadPlaneV(RenderType renderType)
 {
 	std::vector<VertexP> vertices;
 	vertices.push_back(VertexP(1.0, 1.0, 0.0));		// top right			0
@@ -113,7 +113,7 @@ std::shared_ptr<Mesh> ObjectLoader::loadPlaneV()
 
 	std::vector<unsigned int> indices{0,1,2,3,4,5};
 
-	return std::make_shared<Mesh>(vertices,indices,Material());
+	return std::make_shared<Mesh>(vertices,indices,Material(),renderType);
 }
 
 ObjectLoader::~ObjectLoader()
@@ -121,7 +121,7 @@ ObjectLoader::~ObjectLoader()
 
 }
 
-std::shared_ptr<Mesh> ObjectLoader::processMesh(aiMesh* mesh, const aiScene* scene, Meshtype type) {
+std::shared_ptr<Mesh> ObjectLoader::processMesh(aiMesh* mesh, const aiScene* scene, MeshType type) {
 
 	//calc indices. same procedure for all mesh types
 	std::vector<unsigned int> indices;

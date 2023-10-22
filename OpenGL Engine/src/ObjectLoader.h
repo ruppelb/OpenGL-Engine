@@ -11,9 +11,9 @@ class ObjectLoader {
 public:
 	static ObjectLoader* getInstance();
 
-	std::vector<std::shared_ptr<Mesh>> loadObjectFromFile(const std::string& filepath, Meshtype type);
-	std::shared_ptr<Mesh> loadCubeVTN();
-	std::shared_ptr<Mesh> loadPlaneV();
+	std::vector<std::shared_ptr<Mesh>> loadObjectFromFile(const std::string& filepath, MeshType type);
+	std::shared_ptr<Mesh> loadCubeVTN(RenderType renderType = Default);
+	std::shared_ptr<Mesh> loadPlaneV(RenderType renderType = Default);
 
 
 	ObjectLoader(ObjectLoader const&) = delete;
@@ -27,7 +27,7 @@ private:
 
 	std::vector<std::shared_ptr<Texture>>textures_loaded;
 
-	std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, Meshtype type);
+	std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, MeshType type);
 
 	std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType t_type);
 };

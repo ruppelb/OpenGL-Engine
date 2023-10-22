@@ -1,31 +1,31 @@
 #include "Mesh.h"
 
 Mesh::Mesh()
-    :m_type(EMPTY),m_material(Material(0.0))
+    :m_type(EMPTY),m_material(Material(0.0)), m_renderType(Default)
 {
 }
 
-Mesh::Mesh(std::vector<VertexPNT> vertices, std::vector<unsigned int> indices, Material material)
-    :m_type(PNT), m_material(material)
+Mesh::Mesh(std::vector<VertexPNT> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
+    :m_type(PNT), m_material(material), m_renderType(renderType)
 {
     setupMeshPNT(vertices, indices);
 }
 
-Mesh::Mesh(std::vector<VertexPNC> vertices, std::vector<unsigned int> indices, Material material)
-    :m_type(PNC), m_material(material)
+Mesh::Mesh(std::vector<VertexPNC> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
+    :m_type(PNC), m_material(material), m_renderType(renderType)
 {
     setupMeshPNC(vertices, indices);
 }
 
 
-Mesh::Mesh(std::vector<VertexPN> vertices, std::vector<unsigned int> indices, Material material)
-    :m_type(PN), m_material(material)
+Mesh::Mesh(std::vector<VertexPN> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
+    :m_type(PN), m_material(material), m_renderType(renderType)
 {
     setupMeshPN(vertices,indices);
 }
 
-Mesh::Mesh(std::vector<VertexP> vertices, std::vector<unsigned int> indices, Material material)
-    :m_type(P), m_material(material)
+Mesh::Mesh(std::vector<VertexP> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
+    :m_type(P), m_material(material), m_renderType(renderType)
 {
     setupMeshP(vertices, indices);
 }
@@ -40,13 +40,24 @@ void Mesh::draw(std::shared_ptr<Shader> shader, Renderer* renderer, Material* ov
             overrideMaterial->setMaterialUniforms(shader);
         }
 
-        //render vertices
-        renderer->draw(*m_vao, *m_indexBuffer, *shader);
+        switch (m_renderType)
+        {
+        case Default:
+            //render vertices as triangles
+            renderer->draw(*m_vao, *m_indexBuffer, *shader);
+            break;
+        case Lines:
+            //render vertices as lines
+            renderer->drawLines(*m_vao, *m_indexBuffer, *shader);
+            break;
+        default:
+            break;
+        }
     }
 }
 
 Mesh::Mesh(const Mesh& other)
-    :m_indexBuffer(other.m_indexBuffer),m_vertexBuffer(other.m_vertexBuffer),m_vao(other.m_vao), m_type(other.m_type), m_material(other.m_material)
+    :m_indexBuffer(other.m_indexBuffer),m_vertexBuffer(other.m_vertexBuffer),m_vao(other.m_vao), m_type(other.m_type), m_material(other.m_material), m_renderType(other.m_renderType)
 {
 }
 
