@@ -12,8 +12,9 @@ public:
 	static ObjectLoader* getInstance();
 
 	std::vector<std::shared_ptr<Mesh>> loadObjectFromFile(const std::string& filepath, MeshType type);
-	std::shared_ptr<Mesh> loadCubeVTN(RenderType renderType = Default);
-	std::shared_ptr<Mesh> loadPlaneV(RenderType renderType = Default);
+	std::shared_ptr<Mesh> loadCubeVTN();
+	std::shared_ptr<Mesh> loadLineCubeVTN();
+	std::shared_ptr<Mesh> loadPlaneV();
 
 
 	ObjectLoader(ObjectLoader const&) = delete;

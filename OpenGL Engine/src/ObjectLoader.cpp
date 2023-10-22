@@ -40,7 +40,7 @@ std::vector<std::shared_ptr<Mesh>>  ObjectLoader::loadObjectFromFile(const std::
 	return meshes;
 }
 
-std::shared_ptr<Mesh> ObjectLoader::loadCubeVTN(RenderType renderType)
+std::shared_ptr<Mesh> ObjectLoader::loadCubeVTN()
 {
 	//load data and prepare vertex arrays, shaders, and textures
 
@@ -98,10 +98,71 @@ std::shared_ptr<Mesh> ObjectLoader::loadCubeVTN(RenderType renderType)
 		21, 22, 23
 	};
 	
-	return std::make_shared<Mesh>(vertices,indices,Material(1.0),renderType);
+	return std::make_shared<Mesh>(vertices,indices,Material(1.0));
 }
 
-std::shared_ptr<Mesh> ObjectLoader::loadPlaneV(RenderType renderType)
+std::shared_ptr<Mesh> ObjectLoader::loadLineCubeVTN()
+{
+	//load data and prepare vertex arrays, shaders, and textures
+
+	std::vector<VertexPNT> vertices;
+
+	// Front face
+	vertices.push_back(VertexPNT(-1.0, -1.0, 1.0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f));	// left bottom        0
+	vertices.push_back(VertexPNT(1.0, -1.0, 1.0, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f));	// right bottom       1
+	vertices.push_back(VertexPNT(-1.0, 1.0, 1.0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f));	// left top           2
+	vertices.push_back(VertexPNT(1.0, 1.0, 1.0, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f));		// right top          3
+	// back face
+	vertices.push_back(VertexPNT(-1.0, -1.0, -1.0, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f));	// left bottom        4
+	vertices.push_back(VertexPNT(1.0, -1.0, -1.0, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f));	// right bottom       5
+	vertices.push_back(VertexPNT(-1.0, 1.0, -1.0, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f));	// left top           6
+	vertices.push_back(VertexPNT(1.0, 1.0, -1.0, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f));	// right top          7
+
+	// left side face
+	vertices.push_back(VertexPNT(-1.0, -1.0, -1.0, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f));	// left bottom        8
+	vertices.push_back(VertexPNT(-1.0, -1.0, 1.0, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f));	// right bottom       9
+	vertices.push_back(VertexPNT(-1.0, 1.0, -1.0, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f));	// left top           10
+	vertices.push_back(VertexPNT(-1.0, 1.0, 1.0, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f));	// right top          11
+
+	// right side face
+	vertices.push_back(VertexPNT(1.0, -1.0, 1.0, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); // left bottom        12
+	vertices.push_back(VertexPNT(1.0, -1.0, -1.0, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); // right bottom       13
+	vertices.push_back(VertexPNT(1.0, 1.0, 1.0, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); // left top           14
+	vertices.push_back(VertexPNT(1.0, 1.0, -1.0, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); // right top          15
+
+	// bottom face
+	vertices.push_back(VertexPNT(-1.0, -1.0, -1.0, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f)); // left bottom        16
+	vertices.push_back(VertexPNT(1.0, -1.0, -1.0, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f));	 // right bottom       17
+	vertices.push_back(VertexPNT(-1.0, -1.0, 1.0, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f)); // left top           18
+	vertices.push_back(VertexPNT(1.0, -1.0, 1.0, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f));	 // right top          19
+
+	// top face
+	vertices.push_back(VertexPNT(-1.0, 1.0, 1.0, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f)); // left bottom        20
+	vertices.push_back(VertexPNT(1.0, 1.0, 1.0, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f));	 // right bottom       21
+	vertices.push_back(VertexPNT(-1.0, 1.0, -1.0, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f)); // left top           22
+	vertices.push_back(VertexPNT(1.0, 1.0, -1.0, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f));  // right top          23
+
+
+
+	std::vector<unsigned int> indices{
+		0, 1, 2, 3,
+		0, 2, 1, 3,
+		4, 5, 6, 7,
+		4, 6, 5, 7,
+		8, 9, 10, 11,
+		8, 10, 9, 11,
+		12, 13, 14, 15,
+		12, 14, 13, 15,
+		16, 17, 18, 19,
+		16, 18, 17, 19,
+		20, 21, 22, 23,
+		20, 22, 21, 23
+	};
+
+	return std::make_shared<Mesh>(vertices, indices, Material(1.0),Lines);
+}
+
+std::shared_ptr<Mesh> ObjectLoader::loadPlaneV()
 {
 	std::vector<VertexP> vertices;
 	vertices.push_back(VertexP(1.0, 1.0, 0.0));		// top right			0
@@ -113,7 +174,7 @@ std::shared_ptr<Mesh> ObjectLoader::loadPlaneV(RenderType renderType)
 
 	std::vector<unsigned int> indices{0,1,2,3,4,5};
 
-	return std::make_shared<Mesh>(vertices,indices,Material(),renderType);
+	return std::make_shared<Mesh>(vertices,indices,Material());
 }
 
 ObjectLoader::~ObjectLoader()

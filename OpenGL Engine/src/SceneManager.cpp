@@ -54,11 +54,11 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	test->setHidden(false);
 	sceneObjects.push_back(test);
 
-	/*
-	std::shared_ptr<Mesh> t = m_objL->loadCubeVTN(Lines);
+	
+	std::shared_ptr<Mesh> t = m_objL->loadLineCubeVTN();
 	std::shared_ptr<SOLine> test2 = std::make_shared<SOLine>("TestLine", t, m_materialShader, m_renderer);
 	test2->setHidden(false);
-	sceneObjects.push_back(test2);*/
+	sceneObjects.push_back(test2);
 
 	return m_renderer;
 }
