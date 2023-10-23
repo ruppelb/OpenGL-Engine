@@ -3,6 +3,8 @@
 SOLight::SOLight(int lightSourceId, std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, std::vector<Material> overrideMaterials)
 	:SceneObject(name,meshes, s, renderer, overrideMaterials),m_lightSourceId(lightSourceId)
 {
+	 
+
 	m_lightSource = LightController::getInstance()->getLightSource(lightSourceId);
 
 	//set initial position and rotation according to light source position and rotation
@@ -10,9 +12,12 @@ SOLight::SOLight(int lightSourceId, std::string name, std::vector<std::shared_pt
 	switch (m_lightSource->type) {
 	case Point:
 		m_translation = m_lightSource->position;
+		m_UISize = ImVec2(420, 160);
+
 		break;
 	case Directional:
-		
+		m_UISize = ImVec2(420, 120);
+
 		//create rotation matrix from new direction and old direction
 		glm::vec3 cross = glm::normalize(glm::cross(m_lightSource->direction, glm::vec3(0.0, 0.0, -1.0)));
 		float dot = glm::dot(m_lightSource->direction, glm::vec3(0.0, 0.0, -1.0));
@@ -75,24 +80,13 @@ void SOLight::onUpdate(float deltaTime)
 	}
 }
 
-void SOLight::onImGuiRender()
+void SOLight::addUIElements()
 {
-	if (ImGui::CollapsingHeader(m_name.c_str())) {
-		
-		if (m_lightSource->type == Point) {
-			ImGui::BeginChild(m_name.c_str(), ImVec2(420, 155), true);
-			ImGui::DragFloat("Radius", &m_lightSource->radius,0.1f, 0.1f, 100);
-			ImGui::DragFloat("Falloff", &m_lightSource->falloff, 0.1f,0.1f, 100);
-		}
-		else {
-			ImGui::BeginChild(m_name.c_str(), ImVec2(420, 115), true);
-		}
-		ImGui::DragFloat4("Color", &m_lightSource->color.x, 0.01f,0.0f, 1.0f);
-		ImGui::DragFloat3("Translation ", &m_translation.x, 0.01f, -30.0f, 30.0f);
-		ImGui::DragFloat("Rotation X ", &m_angleX, 0.1f, -360.f, 360.0f);
-		ImGui::DragFloat("Rotation Y ", &m_angleY, 0.1f, -360.f, 360.0f );
-		ImGui::DragFloat("Rotation Z ", &m_angleZ, 0.1f, -360.f, 360.0f);
-		ImGui::EndChild();
+	ImGui::Separator();
+
+	if (m_lightSource->type == Point) {
+		ImGui::DragFloat("Radius", &m_lightSource->radius, 0.1f, 0.1f, 100);
+		ImGui::DragFloat("Falloff", &m_lightSource->falloff, 0.1f, 0.1f, 100);
 	}
-	
+	ImGui::DragFloat4("Color", &m_lightSource->color.x, 0.01f, 0.0f, 1.0f);
 }

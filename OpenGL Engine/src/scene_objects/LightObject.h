@@ -9,7 +9,7 @@ public:
 	SOLight(int lightSourceId, std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr <Shader>s, std::shared_ptr<Renderer> renderer, Material* overrideMaterial = nullptr);
 
 	void onUpdate(float deltaTime) override;
-	void onImGuiRender() override;
+	void addUIElements() override;
 private:
 	LightSource* m_lightSource;
 	int m_lightSourceId;

@@ -51,13 +51,12 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	test->setTranslation(glm::vec3(0, 0, -10));
 	test->setRotationY(45.0f);
 	test->setScale(glm::vec3(0.1));
-	test->setHidden(false);
 	sceneObjects.push_back(test);
 
 	
 	std::shared_ptr<Mesh> t = m_objL->loadLineCubeVTN();
 	std::shared_ptr<SOLine> test2 = std::make_shared<SOLine>("TestLine", t, m_materialShader, m_renderer);
-	test2->setHidden(false);
+	test2->setTranslation(glm::vec3(0, 0, 5.0));
 	sceneObjects.push_back(test2);
 
 	return m_renderer;
@@ -79,7 +78,6 @@ std::shared_ptr<SOCamera> SceneManager::addCameraObject(glm::vec3 position, Came
 		if (id > -1) {
 			name.append(std::to_string(id - 1));
 			cameraObject = std::make_shared<SOCamera>(id, name, cameraMesh, m_materialShader, m_renderer);
-			cameraObject->setHidden(false);
 			sceneObjects.push_back(cameraObject);
 			return cameraObject;
 		}
@@ -90,7 +88,6 @@ std::shared_ptr<SOCamera> SceneManager::addCameraObject(glm::vec3 position, Came
 		if (id > -1) {
 			name.append(std::to_string(id - 1));
 			cameraObject = std::make_shared<SOCamera>(id, name, cameraMesh, m_materialShader, m_renderer);
-			cameraObject->setHidden(false);
 			sceneObjects.push_back(cameraObject);
 			return cameraObject;
 		}
@@ -110,7 +107,6 @@ std::shared_ptr<SOLight> SceneManager::addLightObject(glm::vec3 position, LightT
 		if (id > -1) {
 			name.append(std::to_string(id - 1));
 			lightObject = std::make_shared<SOLight>(id, name, pointLightMesh, m_materialShader, m_renderer);
-			lightObject->setHidden(false);
 			sceneObjects.push_back(lightObject);
 			return lightObject;
 		}
@@ -120,7 +116,6 @@ std::shared_ptr<SOLight> SceneManager::addLightObject(glm::vec3 position, LightT
 		if (id > -1) {
 			name.append(std::to_string(id - 1));
 			lightObject = std::make_shared<SOLight>(id, name, directionalLightMesh, m_materialShader, m_renderer);
-			lightObject->setHidden(false);
 			sceneObjects.push_back(lightObject);
 		}
 		return lightObject;

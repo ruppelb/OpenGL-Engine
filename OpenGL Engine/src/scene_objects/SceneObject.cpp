@@ -10,7 +10,9 @@ SceneObject::SceneObject(std::string name, std::vector<std::shared_ptr<Mesh>> me
 
 	m_shader = s;
 
-	m_hidden = true;
+	m_hidden = false;
+	m_renderUI = true;
+	m_UISize = ImVec2(420, 100);
 	m_model = glm::mat4(1.0f);
 
 	if (!overrideMaterials.empty()) {
@@ -29,7 +31,9 @@ SceneObject::SceneObject(std::string name, std::shared_ptr<Mesh> mesh, std::shar
 
 	m_shader = s;
 
-	m_hidden = true;
+	m_hidden = false;
+	m_renderUI = true;
+	m_UISize = ImVec2(420, 100);
 	//m_color = glm::vec4(1.0, 1.0, 1.0, 1.0);
 	m_model = glm::mat4(1.0f);
 
@@ -47,7 +51,7 @@ SceneObject::~SceneObject()
 SceneObject::SceneObject(const SceneObject& other)
 	:m_meshes(other.m_meshes), m_shader(other.m_shader), m_overrideMaterials(other.m_overrideMaterials),m_overrideMeshMaterials(other.m_overrideMeshMaterials),m_scale(other.m_scale),
 	m_translation(glm::vec3(0.0)),m_cameraController(other.m_cameraController),m_lightController(other.m_lightController), m_renderer(other.m_renderer), m_model(other.m_model),
-	m_hidden(other.m_hidden),m_angleX(other.m_angleX), m_angleY(other.m_angleY), m_angleZ(other.m_angleZ)
+	m_hidden(other.m_hidden),m_angleX(other.m_angleX), m_angleY(other.m_angleY), m_angleZ(other.m_angleZ), m_renderUI(other.m_renderUI), m_UISize(other.m_UISize)
 {
 	m_name = other.m_name;
 	m_name.append("_copy");
@@ -108,14 +112,17 @@ void SceneObject::onRender()
 
 void SceneObject::onImGuiRender()
 { 
-	
-	if (ImGui::CollapsingHeader(m_name.c_str())) {
-		ImGui::BeginChild(m_name.c_str(), ImVec2(420, 95), true);
-		ImGui::DragFloat3("Translation ", &m_translation.x, 0.01f, -30.0f, 30.0f);
-		ImGui::DragFloat("Rotation X ", &m_angleX, 0.1f, -360.f, 360.0f, "%.3f");
-		ImGui::DragFloat("Rotation Y ", &m_angleY, 0.1f, -360.f, 360.0f, "%.3f");
-		ImGui::DragFloat("Rotation Z ", &m_angleZ,0.1f, -360.f, 360.0f,"%.3f"); //ImGuiSliderFlags_AlwaysClamp
-		ImGui::EndChild();
+	if (m_renderUI) {
+		if (ImGui::CollapsingHeader(m_name.c_str())) {
+			ImGui::BeginChild(m_name.c_str(), m_UISize, true);
+			ImGui::DragFloat3("Translation ", &m_translation.x, 0.01f, -30.0f, 30.0f);
+			ImGui::Separator();
+			ImGui::DragFloat("Rotation X ", &m_angleX, 0.1f, -360.f, 360.0f, "%.3f");
+			ImGui::DragFloat("Rotation Y ", &m_angleY, 0.1f, -360.f, 360.0f, "%.3f");
+			ImGui::DragFloat("Rotation Z ", &m_angleZ, 0.1f, -360.f, 360.0f, "%.3f"); //ImGuiSliderFlags_AlwaysClamp
+			addUIElements();
+			ImGui::EndChild();
+		}
 	}
 }
 
@@ -176,4 +183,14 @@ void SceneObject::setRotationZ(float angle)
 bool SceneObject::isHidden()
 {
 	return m_hidden;
+}
+
+void SceneObject::setMesh(std::shared_ptr<Mesh> mesh)
+{
+	m_meshes = std::vector<std::shared_ptr<Mesh>>{ mesh };
+}
+
+void SceneObject::setMeshes(std::vector<std::shared_ptr<Mesh>> meshes)
+{
+	m_meshes = meshes;
 }

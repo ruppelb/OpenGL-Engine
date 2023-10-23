@@ -13,9 +13,13 @@ public:
 
 	void onRender() override;
 
-	virtual void onImGuiRender();
+	void addUIElements() override;
 
 private:
+
+	void projectMesh();
+	int m_selectedCam = 0;
 	std::shared_ptr<Mesh> m_projectedMesh;
+	std::shared_ptr<SceneObject> m_projectedObject;
 };
 

@@ -26,7 +26,9 @@ public:
 
 	virtual void onRender();
 
-	virtual void onImGuiRender();
+	void onImGuiRender();
+
+	virtual void addUIElements() {};
 
 	void setModelMatrix(glm::mat4 model);
 	glm::mat4 getModelMatrix();
@@ -45,6 +47,9 @@ public:
 
 	bool isHidden();
 
+	void setMesh(std::shared_ptr<Mesh> mesh);
+	void setMeshes(std::vector<std::shared_ptr<Mesh>> meshes);
+
 protected:
 
 	std::vector<std::shared_ptr<Mesh>> m_meshes;
@@ -62,5 +67,8 @@ protected:
 	LightController* m_lightController;
 	std::shared_ptr<Renderer> m_renderer;
 	bool m_hidden;
+	bool m_renderUI;
 	std::string m_name;
+
+	ImVec2 m_UISize;
 };
