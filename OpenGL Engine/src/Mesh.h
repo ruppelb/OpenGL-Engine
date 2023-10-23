@@ -71,6 +71,9 @@ private:
     Material m_material;
     RenderType m_renderType;
 
+    //maintain the lists of vertices and indices
+
+
     void setupMeshPNT(std::vector<VertexPNT>  vertices, std::vector<unsigned int> indices);
     void setupMeshPNC(std::vector<VertexPNC>  vertices, std::vector<unsigned int> indices);
     void setupMeshPN(std::vector<VertexPN>  vertices, std::vector<unsigned int> indices);

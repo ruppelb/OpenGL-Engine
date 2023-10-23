@@ -19,7 +19,6 @@ private:
 
 	void projectMesh();
 	int m_selectedCam = 0;
-	std::shared_ptr<Mesh> m_projectedMesh;
 	std::shared_ptr<SceneObject> m_projectedObject;
 };
 
