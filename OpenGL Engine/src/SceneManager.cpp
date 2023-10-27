@@ -38,7 +38,7 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	//cameras
 	std::shared_ptr<SOCamera> cameraZero = addCameraObject(glm::vec3(10.0, 10.0, 5.0), Perspective);
 	cameraZero->setFront(glm::normalize(glm::vec3(-1.0, -1.0, -1.0)));
-	std::shared_ptr<SOCamera> cameraOne = addCameraObject(glm::vec3(0.0, 0.0, 0.0), Ortho);
+	std::shared_ptr<SOCamera> cameraOne = addCameraObject(glm::vec3(0.0, 0.0, 0.0), Perspective);
 	
 	//light
 	std::shared_ptr<SOLight> lightZero = addLightObject(glm::vec3(1.0, -1.0, -1.0), Directional);
@@ -56,7 +56,7 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 	
 	std::shared_ptr<Mesh> t = m_objL->loadLineCubeVTN();
 	std::shared_ptr<SOLine> test2 = std::make_shared<SOLine>("TestLine", t, m_materialShader, m_renderer);
-	test2->setTranslation(glm::vec3(0, 0, 5.0));
+	test2->setTranslation(glm::vec3(0, 0, -5.0));
 	sceneObjects.push_back(test2);
 
 	return m_renderer;

@@ -20,11 +20,20 @@ void SOCamera::onUpdate(float deltaTime)
 {
 	SceneObject::onUpdate(deltaTime);
 
-	//align object pose with camera pose
-	setModelMatrix(glm::inverse(m_camera->view));
+	//check if camera is selected
+	if (CameraController::getInstance()->getActiveCam() == m_cameraId) {
+		//align object pose with camera pose
+		setModelMatrix(glm::inverse(m_camera->view));
 
-	//hide mesh of currently selected camera
-	m_hidden = (CameraController::getInstance()->getActiveCam() == m_cameraId);
+		//hide mesh of currently selected camera
+		m_hidden = true;
+	}
+	else {
+		//TODO: remove this below
+		setModelMatrix(glm::inverse(m_camera->view));
+		//TODO align camera matrices with object position
+		m_hidden = false;
+	}
 }
 void SOCamera::setFront(glm::vec3 front)
 {

@@ -6,27 +6,60 @@ Mesh::Mesh()
 }
 
 Mesh::Mesh(std::vector<VertexPNT> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
-    :m_type(PNT), m_material(material), m_renderType(renderType)
+    :m_type(PNT), m_material(material), m_renderType(renderType),m_indices(indices)
 {
+    //save input params
+    for (int i = 0; i < vertices.size(); i++) {
+        VertexUniversal v;
+        v.Position = vertices[i].Position;
+        v.Normal = vertices[i].Normal;
+        v.TexCoords = vertices[i].TexCoords;
+        m_vertices.push_back(v);
+    }
+
     setupMeshPNT(vertices, indices);
 }
 
 Mesh::Mesh(std::vector<VertexPNC> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
-    :m_type(PNC), m_material(material), m_renderType(renderType)
+    :m_type(PNC), m_material(material), m_renderType(renderType), m_indices(indices)
 {
+    //save input params
+    for (int i = 0; i < vertices.size(); i++) {
+        VertexUniversal v;
+        v.Position = vertices[i].Position;
+        v.Normal = vertices[i].Normal;
+        v.Color = vertices[i].Color;
+        m_vertices.push_back(v);
+    }
+
     setupMeshPNC(vertices, indices);
 }
 
 
 Mesh::Mesh(std::vector<VertexPN> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
-    :m_type(PN), m_material(material), m_renderType(renderType)
+    :m_type(PN), m_material(material), m_renderType(renderType), m_indices(indices)
 {
+    //save input params
+    for (int i = 0; i < vertices.size(); i++) {
+        VertexUniversal v;
+        v.Position = vertices[i].Position;
+        v.Normal = vertices[i].Normal;
+        m_vertices.push_back(v);
+    }
+
     setupMeshPN(vertices,indices);
 }
 
 Mesh::Mesh(std::vector<VertexP> vertices, std::vector<unsigned int> indices, Material material, RenderType renderType)
-    :m_type(P), m_material(material), m_renderType(renderType)
+    :m_type(P), m_material(material), m_renderType(renderType), m_indices(indices)
 {
+    //save input params
+    for (int i = 0; i < vertices.size(); i++) {
+        VertexUniversal v;
+        v.Position = vertices[i].Position;
+        m_vertices.push_back(v);
+    }
+
     setupMeshP(vertices, indices);
 }
 
@@ -59,6 +92,26 @@ void Mesh::draw(std::shared_ptr<Shader> shader, Renderer* renderer, Material* ov
 Mesh::Mesh(const Mesh& other)
     :m_indexBuffer(other.m_indexBuffer),m_vertexBuffer(other.m_vertexBuffer),m_vao(other.m_vao), m_type(other.m_type), m_material(other.m_material), m_renderType(other.m_renderType)
 {
+}
+
+std::vector<VertexUniversal> Mesh::getVertices()
+{
+    return m_vertices;
+}
+
+std::vector<unsigned int> Mesh::getIndices()
+{
+    return m_indices;
+}
+
+MeshType Mesh::getType()
+{
+    return m_type;
+}
+
+Material Mesh::getMaterial()
+{
+    return m_material;
 }
 
 void Mesh::setupMeshPNT(std::vector<VertexPNT>  vertices, std::vector<unsigned int> indices)
