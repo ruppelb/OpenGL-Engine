@@ -68,10 +68,8 @@ void SOLine::projectMesh()
 					//transform position
 					glm::vec4 transformedPoint = proj * view * getModelMatrix() * glm::vec4(vertices[j].Position,1.0);
 					//std::cout << "Transformed \n" << glm::to_string(transformedPoint) << std::endl;
-					//representation of 2D projected point
+					//representation of 2D projected point (z coordinate does not need to be one, since it is clamped to 0.0 1.0 range and only used for depth estimation. Other coordinates get linearly mapped to screen coordinates)
 					glm::vec3 projectedPoint = transformedPoint / transformedPoint.w;
-					
-					//projectedPoint = (projectedPoint / projectedPoint.z); //somehow prevents the backprojected mesh to be aligned with the original mesh
 					
 					//std::cout << "Projected \n"<< glm::to_string(projectedPoint )<< std::endl;
 					
