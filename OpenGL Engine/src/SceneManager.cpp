@@ -55,7 +55,7 @@ std::shared_ptr<Renderer> SceneManager::loadInitialScene()
 
 	
 	std::shared_ptr<Mesh> t = m_objL->loadLineCubeVTN();
-	std::shared_ptr<SOLine> test2 = std::make_shared<SOLine>("TestLine", t, m_materialShader, m_renderer);
+	std::shared_ptr<SOProjection> test2 = std::make_shared<SOProjection>("TestLine", t, m_materialShader, m_renderer);
 	test2->setTranslation(glm::vec3(0, 0, -5.0));
 	sceneObjects.push_back(test2);
 

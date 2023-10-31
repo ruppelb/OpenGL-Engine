@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\scene_objects\LineObject.cpp" />
+    <ClCompile Include="src\scene_objects\ProjectionObject.cpp" />
     <ClCompile Include="src\GridObject.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -49,7 +49,7 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\scene_objects\LineObject.h" />
+    <ClInclude Include="src\scene_objects\ProjectionObject.h" />
     <ClInclude Include="src\GridObject.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\CameraController.h" />

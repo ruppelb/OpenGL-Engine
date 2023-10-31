@@ -96,7 +96,7 @@
     <ClCompile Include="src\GridObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene_objects\LineObject.cpp">
+    <ClCompile Include="src\scene_objects\ProjectionObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1031,7 +1031,7 @@
     <ClInclude Include="src\GridObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene_objects\LineObject.h">
+    <ClInclude Include="src\scene_objects\ProjectionObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

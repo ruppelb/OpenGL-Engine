@@ -1,28 +1,36 @@
-#include "LineObject.h"
+#include "ProjectionObject.h"
 
-SOLine::SOLine(std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer)
+SOProjection::SOProjection(std::string name, std::vector<std::shared_ptr<Mesh>> meshes, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, RenderType type)
 	:SceneObject(name, meshes, s, renderer)
 {
 	name = name.append("_projection");
 	m_projectedObject = std::make_shared<SceneObject>(name, std::make_shared<Mesh>(),s,renderer);
 
+	//initialize projected mesh render type with parent mesh render type
+	m_renderType = meshes[0]->getRenderType();
+	m_selectedRenderType = RenderTypeToString(m_renderType);
+
 	m_UISize = ImVec2(420, 155);
 }
 
-SOLine::SOLine(std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer)
+SOProjection::SOProjection(std::string name, std::shared_ptr<Mesh> mesh, std::shared_ptr<Shader> s, std::shared_ptr<Renderer> renderer, RenderType type)
 	:SceneObject(name, mesh,s,renderer)
 {
 	name = name.append("_projection");
 	m_projectedObject = std::make_shared<SceneObject>(name, std::make_shared<Mesh>(), s, renderer);
 
+	//initialize projected mesh render type with parent mesh render type
+	m_renderType = mesh->getRenderType();
+	m_selectedRenderType = RenderTypeToString(m_renderType);
+
 	m_UISize = ImVec2(420, 155);
 }
 
-SOLine::~SOLine()
+SOProjection::~SOProjection()
 {
 }
 
-void SOLine::onRender()
+void SOProjection::onRender()
 {
 	//render original mesh first
 	SceneObject::onRender();
@@ -31,18 +39,37 @@ void SOLine::onRender()
 
 }
 
-void SOLine::addUIElements()
+void SOProjection::addUIElements()
 {
 	ImGui::Separator();
 	ImGui::Text("Project to Camera");
 	ImGui::DragInt("Cam", &m_selectedCam, 1.0f, 0, CameraController::getInstance()->getCameraCount() - 1, "%d", ImGuiSliderFlags_AlwaysClamp);
+	if (ImGui::BeginCombo("Render as", m_selectedRenderType)) {
+		RenderType typeSelected = StringToRenderType(m_selectedRenderType);
+
+		for (int i = 0; i < RENDERTYPENUM;  i++) {
+			
+			RenderType t = static_cast<RenderType>(i);
+			bool is_selected = t == typeSelected;
+			if (ImGui::Selectable(RenderTypeToString(t), is_selected)) {
+				m_selectedRenderType = RenderTypeToString(t);
+				m_renderType = t;
+			}
+				
+				
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndCombo();
+	}
 	if (ImGui::Button("Project Mesh")) {
 		projectMesh();
 	}
 	m_projectedObject->onImGuiRender();
 }
 
-void SOLine::projectMesh()
+void SOProjection::projectMesh()
 {
 	//m_projectedObject->setMeshes(m_meshes);
 
@@ -63,6 +90,18 @@ void SOLine::projectMesh()
 				std::vector<VertexPNT> resultVertices;
 
 				for (int j = 0; j < vertices.size(); j++) {
+					
+					
+					glm::vec3 normal = glm::transpose(glm::inverse(view)) * glm::transpose(glm::inverse(getModelMatrixForDirections())) * glm::vec4(vertices[j].Normal, 1.0);
+
+					if (m_renderType == Default) {
+						//ONLY NEEDED IN CASE WE PROJECT MESH RENDERED BY TRIANGLES
+						//filter out points not visible
+						if (glm::dot(normal, glm::vec3(0, 0, -1)) > 0) {
+							continue;
+						}
+					}
+
 					VertexPNT resultVertex;
 
 					//transform position
@@ -80,8 +119,8 @@ void SOLine::projectMesh()
 
 					resultVertex.Position = glm::vec3(backprojectedPoint);
 
-					//transform normal (leave the same so that lighting changes on original mesh are reflected on projected mesh)
-					resultVertex.Normal = vertices[j].Normal;
+					//transform normal
+					resultVertex.Normal = normal;
 
 					//apply texture coordinate
 					resultVertex.TexCoords = vertices[j].TexCoords;
@@ -90,7 +129,7 @@ void SOLine::projectMesh()
 					resultVertices.push_back(resultVertex);
 				}
 
-				std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat,Lines);
+				std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat, m_renderType);
 				resultMeshes.push_back(resultMesh);
 			}
 			break;
@@ -99,19 +138,27 @@ void SOLine::projectMesh()
 			std::vector<VertexPNC> resultVertices;
 
 			for (int j = 0; j < vertices.size(); j++) {
+
+				glm::vec3 normal = glm::transpose(glm::inverse(view)) * glm::transpose(glm::inverse(getModelMatrixForDirections())) * glm::vec4(vertices[j].Normal, 1.0);
+				if (m_renderType == Default) {
+					if (glm::dot(normal, glm::vec3(0, 0, -1)) > 0) {
+						continue;
+					}
+				}
+
 				VertexPNC resultVertex;
 
 				glm::vec4 transformedPoint = proj * view * getModelMatrix() * glm::vec4(vertices[j].Position, 1.0);
 				glm::vec3 projectedPoint = transformedPoint / transformedPoint.w;
 				glm::vec4 backprojectedPoint = glm::inverse(proj) * glm::vec4(projectedPoint, 1.0);
 				resultVertex.Position = glm::vec3(backprojectedPoint);
-				resultVertex.Normal = vertices[j].Normal;
+				resultVertex.Normal = normal;
 				resultVertex.Color = vertices[j].Color;
 
 				resultVertices.push_back(resultVertex);
 			}
 
-			std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat, Lines);
+			std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat, m_renderType);
 			resultMeshes.push_back(resultMesh);
 		}
 			break;
@@ -120,18 +167,26 @@ void SOLine::projectMesh()
 			std::vector<VertexPN> resultVertices;
 
 			for (int j = 0; j < vertices.size(); j++) {
+
+				glm::vec3 normal = glm::transpose(glm::inverse(view)) * glm::transpose(glm::inverse(getModelMatrixForDirections())) * glm::vec4(vertices[j].Normal, 1.0);
+				if (m_renderType == Default) {
+					if (glm::dot(normal, glm::vec3(0, 0, -1)) > 0) {
+						continue;
+					}
+				}
+
 				VertexPN resultVertex;
 
 				glm::vec4 transformedPoint = proj * view * getModelMatrix() * glm::vec4(vertices[j].Position, 1.0);
 				glm::vec3 projectedPoint = transformedPoint / transformedPoint.w;
 				glm::vec4 backprojectedPoint = glm::inverse(proj) * glm::vec4(projectedPoint, 1.0);
 				resultVertex.Position = glm::vec3(backprojectedPoint);
-				resultVertex.Normal = vertices[j].Normal;
+				resultVertex.Normal = normal;
 
 				resultVertices.push_back(resultVertex);
 			}
 
-			std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat, Lines);
+			std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat, m_renderType);
 			resultMeshes.push_back(resultMesh);
 		}
 			break;
@@ -150,7 +205,7 @@ void SOLine::projectMesh()
 				resultVertices.push_back(resultVertex);
 			}
 
-			std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat, Lines);
+			std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>(resultVertices, indices, mat, m_renderType);
 			resultMeshes.push_back(resultMesh);
 		}
 			break;

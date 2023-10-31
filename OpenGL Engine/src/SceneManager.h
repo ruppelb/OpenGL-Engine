@@ -9,7 +9,7 @@
 #include "scene_objects/SceneObject.h"
 #include "scene_objects/LightObject.h"
 #include "scene_objects/CameraObject.h"
-#include "scene_objects/LineObject.h"
+#include "scene_objects/ProjectionObject.h"
 #include "GridObject.h"
 #include "ObjectLoader.h"
 

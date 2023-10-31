@@ -83,6 +83,10 @@ void Mesh::draw(std::shared_ptr<Shader> shader, Renderer* renderer, Material* ov
             //render vertices as lines
             renderer->drawLines(*m_vao, *m_indexBuffer, *shader);
             break;
+        case Points:
+            //render vertices as points
+            renderer->drawPoints(*m_vao, *m_indexBuffer, *shader);
+            break;
         default:
             break;
         }
@@ -112,6 +116,11 @@ MeshType Mesh::getType()
 Material Mesh::getMaterial()
 {
     return m_material;
+}
+
+RenderType Mesh::getRenderType()
+{
+    return m_renderType;
 }
 
 void Mesh::setupMeshPNT(std::vector<VertexPNT>  vertices, std::vector<unsigned int> indices)

@@ -7,8 +7,37 @@
 #include "VertexBufferLayout.h"
 #include "Material.h"
 
+#define RENDERTYPENUM 3
+
 enum MeshType {PNT, PNC,PN,P, EMPTY};
-enum RenderType {Default,Lines};
+enum RenderType {Default,Lines,Points};
+
+constexpr const char* RenderTypeToString(RenderType e) throw()
+{
+    switch (e)
+    {
+    case RenderType::Default: return "Triangles";
+    case RenderType::Lines: return   "Lines";
+    case RenderType::Points: return  "Points";
+    default: throw std::invalid_argument("Unimplemented item");
+    }
+}
+
+constexpr RenderType StringToRenderType(const char* e) throw()
+{
+    if (e == RenderTypeToString(RenderType::Default)) {
+        return RenderType::Default;
+    }
+    else if (e == RenderTypeToString(RenderType::Lines)) {
+        return RenderType::Lines;
+    }
+    else if (e == RenderTypeToString(RenderType::Points)) {
+        return RenderType::Points;
+    }
+    else {
+        throw std::invalid_argument("Unimplemented item");
+    }
+}
 
 struct VertexP {
     // position
@@ -86,6 +115,7 @@ public:
     std::vector<unsigned int> getIndices();
     MeshType getType();
     Material getMaterial();
+    RenderType getRenderType();
 
     //bool hasTextures = false;
 private:
